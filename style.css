@@ -1,0 +1,307 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+header {
+    background-color: #fff;
+    padding: 1em;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra gli elementi orizzontalmente */
+}
+
+.logo-title-container {
+    display: flex; /* Dispone logo e titolo affiancati */
+    align-items: flex-start; /* Allinea gli elementi all'inizio (in alto) */
+    margin-bottom: 5px;
+}
+
+.logo-column {
+    margin-right: 10px; /* Spazio tra logo e testo */
+}
+
+.logo-column img {
+    height: 50px; /* Imposta l'altezza del logo */
+}
+
+.title-column {
+    display: flex;
+    flex-direction: column; /* Dispone AT-render e sottotitolo verticalmente */
+    align-items: flex-start; /* Allinea il testo a sinistra */
+}
+
+.title-column h1 {
+    margin: 0 0 0 0; /* Margine inferiore per separare AT-render dal sottotitolo */
+    color: #222;
+    font-size: 1.8em;
+    white-space: nowrap;
+}
+
+.title-column .sotto-titolo {
+    font-weight: 400;
+    color: #555;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0; /* Spazio sopra la navigazione */
+    display: flex;
+    justify-content: center;
+}
+
+nav li {
+    margin: 0 1em;
+}
+
+nav a {
+    text-decoration: none;
+    color: #555;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #007bff;
+}
+
+main {
+    padding: 20px;
+}
+
+#lavori h2 {
+    text-align: center;
+    margin-bottom: 1.5em;
+    color: #222;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.tab-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Imposta una larghezza minima maggiore */
+    gap: 20px;
+}
+
+.tab-item {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+}
+
+.tab-item.active {
+    display: block;
+}
+
+.tab-content {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.tab-content img {
+    display: block;
+    max-width: 100%;
+    height: auto; /* Mantiene le proporzioni */
+    max-height: 420px; /* Imposta l'altezza massima */
+    object-fit: contain; /* Opzionale: Assicura che l'immagine stia completamente dentro il contenitore senza ritagli */
+}
+
+.tab-content img,
+.tab-content video,
+.tab-content iframe {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.tab-item h3 {
+    padding: 15px;
+    margin: 0;
+    font-size: 1.2em;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tab-item p.caption {
+    padding: 10px 15px;
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.action-button,
+.action-link {
+    display: block;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 0 0 8px 8px;
+    transition: background-color 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.action-button:hover,
+.action-link:hover {
+    background-color: #0056b3;
+}
+
+#contatti,
+#about {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-family: 'Montserrat', sans-serif;
+}
+
+#contatti h2,
+#about h2 {
+    color: #222;
+    margin-top: 0;
+    margin-bottom: 1em;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+footer {
+    text-align: center;
+    padding: 1em;
+    background-color: #333;
+    color: #fff;
+    margin-top: 20px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.admin-login-button {
+    background-color: #5cb85c;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+.admin-login-button:hover {
+    background-color: #4cae4c;
+}
+
+.edit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    width: 80%;
+    box-sizing: border-box;
+}
+
+.edit-button:hover {
+    background-color: #0056b3;
+}
+
+/* Stili per il carosello */
+.carousel-container {
+    overflow: hidden; /* Importante per nascondere le immagini fuori dalla vista */
+}
+
+.carousel-item {
+    display: none; /* Inizialmente nascondi tutte le immagini */
+}
+
+.carousel-item img {
+    width: 100%;
+    height: auto;
+    display: block; /* Rimuove lo spazio extra sotto le immagini inline */
+}
+
+.tns-nav {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.tns-nav button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    background-color: #ccc;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.tns-nav button.tns-nav-active {
+    background-color: #333;
+}
+
+/* Stili per l'overlay dell'immagine */
+.image-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Sfondo semi-trasparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Assicura che sia sopra gli altri elementi */
+    cursor: pointer; /* Indica che si può cliccare per chiudere */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+}
+
+.image-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.image-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain; /* Assicura che l'immagine stia dentro l'overlay */
+}

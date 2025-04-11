@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AT-render - Modellazione di superficie</title>
+    <meta name="description" content="Vetrina online dei lavori 3D, modelli e render di AT-render.">
+    <meta name="keywords" content="3D, modelli, render, animazioni, video, portfolio, arte digitale, AT-render, [i tuoi tag specifici]">
+    <meta name="author" content="AT-render">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/tiny-slider.css">
+
+    <link rel="stylesheet" href="js/pannellum.css"/>
+    <script type="text/javascript" src="js/pannellum.js"></script>
+    <script type="text/javascript" src="js/libpannellum.js"></script>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main>
+        <section id="lavori">
+            <h2>I Miei Lavori</h2>
+            <div class="tab-container">
+                <div id="home-render" class="tab-item">
+                    <h3>Reverse engineering</h3>
+                    <div class="tab-content">
+                        <img src="archivio/Tosca.WCA.001.png" alt="Render del Progetto Y" data-original="archivio/Tosca.WCA.001.png">
+                    </div>
+                    <p class="caption">Modello realizzato dalla misurazione dell'oggetto reale.</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Disegno tecnico</h3>
+                    <div class="tab-content">
+                        <img src="archivio/bm.jpg" alt="Render del Progetto Y" data-original="archivio/bm.jpg">
+                    </div>
+                    <p class="caption">Modello realizzato da CAD 2D</p>
+                </div>
+
+                <div id="tab-video1" class="tab-item">
+                    <h3>Camminata virtuale</h3>
+                    <div class="tab-content">
+                        <iframe id="iframe-video1" width="100%" height="400" src="https://www.youtube.com/embed/LhGRONnY-X0?si=2hD_WNUHsutUo8ZI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                    <p class="caption">Una passeggiata virtuale all'interno dell'appartamento appena arredato, grazie all'animazione 3D, ci permette di superare i limiti sterili delle planimetrie tradizionali, che spesso non riescono a restituire una percezione realistica degli spazi e dei volumi. Questa esperienza immersiva dà vita al progetto, offrendo una percezione realistica dell'ambiente.</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Supporto ai professionisti</h3>
+                    <div class="tab-content">
+                        <img src="archivio/cuc.001.jpg" alt="Render per arredatore" data-original="archivio/cuc.001.jpg">
+                    </div>
+                    <p class="caption">Render di una cucina realizzato a supporto dell'arredatore nella presentazione al cliente delle scelte cromatiche e di materiale.</p>
+                </div>
+
+                <div id="tab-360" class="tab-item">
+                    <h3>Immagine 360°</h3>
+                    <div class="tab-content">
+                        <div id="panorama-container" style="width: 100%; height: 400px;"></div>
+                    </div>
+                    <p class="caption">Visualizzazione interattiva a 360 gradi realizzata a supporto dell'arredatore nella presentazione al cliente delle scelte cromatiche e di materiale.</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Catalogo</h3>
+                    <div class="tab-content">
+                        <img src="archivio/cat.001.jpg" alt="Render per catalogo" data-original="archivio/cat.001.jpg">
+                    </div>
+                    <p class="caption">Render di scena per catalogo aziendale.</p>
+                </div>
+
+                <div id="tab-carousel1" class="tab-item">
+                    <h3>Miniappartamento mansardato</h3>
+                    <div class="tab-content">
+                        <div class="carousel-container-1">
+                            <div class="carousel-item">
+                                <img src="archivio/Canussio.001.jpg" alt="Mini mansardato" data-original="archivio/Canussio.001.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Canussio.002.jpg" alt="Mini mansardato" data-original="archivio/Canussio.002.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Canussio.003.jpg" alt="Mini mansardato" data-original="archivio/Canussio.003.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Canussio.004.jpg" alt="Mini mansardato" data-original="archivio/Canussio.004.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Canussio.005.jpg" alt="Mini mansardato" data-original="archivio/Canussio.005.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Canussio.006.jpg" alt="Mini mansardato" data-original="archivio/Canussio.006.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Canussio.007.jpg" alt="Mini mansardato" data-original="archivio/Canussio.007.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Canussio.000.jpg" alt="Mini mansardato" data-original="archivio/Canussio.000.jpg">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="caption">Ricostruzione fedele di una piccola unità immobiliare a scopo di inserzione.</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Villetta moderna Cordoba</h3>
+                    <div class="tab-content">
+                        <img src="archivio/Cordoba.jpg" alt="Render del Progetto Y" data-original="archivio/Cordoba.jpg">
+                    </div>
+                    <p class="caption">Modello realizzato da fotografia</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Render fabbricato</h3>
+                    <div class="tab-content">
+                        <img src="archivio/build01.jpg" alt="Render fabbricato" data-original="archivio/build01.jpg">
+                    </div>
+                    <p class="caption">Render di fabbricato residenziale ottenuto da tavole di progetto</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Scena da foto</h3>
+                    <div class="tab-content">
+                        <img src="archivio/lino.jpg" alt="Render di scena da fotografia" data-original="archivio/lino.jpg">
+                    </div>
+                    <p class="caption">Dalla foto al modello 3D</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Scena da foto</h3>
+                    <div class="tab-content">
+                        <img src="archivio/parco.jpg" alt="Render di scena da fotografia" data-original="archivio/parco.jpg">
+                    </div>
+                    <p class="caption">Dalla foto al modello 3D</p>
+                </div>
+
+                <div id="tab-carousel2" class="tab-item">
+                    <h3>From Netflix</h3>
+                    <div class="tab-content">
+                        <div class="carousel-container-2">
+                            <div class="carousel-item">
+                                <img src="archivio/OtraxS.jpg" alt="Mini mansardato" data-original="archivio/OtraxS.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/OtraxI.jpg" alt="Mini mansardato" data-original="archivio/OtraxI.jpg">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="caption">Scena ispirata da Netflix</p>
+                </div>
+
+                <div id="tab-animazione1" class="tab-item">
+                    <h3>Animazione logo</h3>
+                    <div class="tab-content">
+                        <video id="video-animazione" src="archivio/at-render.logo.mp4" controls width="100%"></video>
+                    </div>
+                    <p class="caption">Animazione 3D del logo AT-render.</p>
+                </div>
+
+                <div id="tab-carousel3" class="tab-item">
+                    <h3>Texture procedurale</h3>
+                    <div class="tab-content">
+                        <div class="carousel-container-3">
+                            <div class="carousel-item">
+                                <img src="archivio/Fuel.pump.001.jpg" alt="Old Fuel Pump" data-original="archivio/Fuel.pump.001.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Fuel.pump.002.jpg" alt="Old Fuel Pump" data-original="archivio/Fuel.pump.002.jpg">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="archivio/Fuel.pump.003.jpg" alt="Old Fuel Pump" data-original="archivio/Fuel.pump.003.jpg">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="caption">Modello 3D realizzato con materiali ottenuti da texture procedurali</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Texture procedurale</h3>
+                    <div class="tab-content">
+                        <img src="archivio/salame.jpg" alt="Salame" data-original="archivio/salame.jpg">
+                    </div>
+                    <p class="caption">Il modello è realizzato con materiali ottenuti da texture procedurali</p>
+                </div>
+
+                <div class="tab-item">
+                    <h3>Texture procedurale</h3>
+                    <div class="tab-content">
+                        <img src="archivio/pizza.jpg" alt="Pizza" data-original="archivio/pizza.jpg">
+                    </div>
+                    <p class="caption">Il modello è realizzato con materiali ottenuti da texture procedurali</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="contatti">
+            <h2>Contatti</h2>
+            <p>AT-render</p>
+            <p>Email: at-render@example.com</p>
+            <p>Telefono: +39 000 000 0000</p>
+            <p>Sito web: www.at-render.com</p>
+        </section>
+
+        <section id="about">
+            <div style="text-align: center;">
+                <img src="img/profilo.png" alt="La tua immagine di profilo" style="max-width: 200px; height: auto; display: block; margin: 0 auto 20px; filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));">
+            </div>
+            <h2>Chi sono</h2>
+            <p>Sono un artista digitale specializzato nella creazione di modelli 3D, render e animazioni. Ho esperienza in vari settori, tra cui architettura, design industriale e videogiochi. Sono appassionato del mio lavoro e mi impegno sempre per offrire ai miei clienti prodotti di alta qualità.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 AT-render</p>
+    </footer>
+
+    <div class="image-overlay">
+        <img src="" alt="Immagine ingrandita">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js"></script>
+    <script>
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Errore nel caricamento dell\'header:', error);
+                document.getElementById('header-container').innerHTML = '<p>Errore nel caricamento dell\'header.</p>';
+            });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const iframeVideo1 = document.getElementById('iframe-video1');
+            const images = document.querySelectorAll('#lavori .tab-content img');
+            const overlay = document.querySelector('.image-overlay');
+            const overlayImage = overlay.querySelector('img');
+            const carouselContainers = document.querySelectorAll('[class^="carousel-container-"]'); // Seleziona tutti i caroselli
+            const panoramaContainer = document.getElementById('panorama-container'); // Ottieni il contenitore del panorama
+
+
+            let currentCarouselImages = [];
+            let currentImageIndex = 0;
+
+            // Funzione per mostrare l'immagine nell'overlay
+            function showOverlayImage(src) {
+                overlayImage.src = src;
+                overlay.classList.add('active');
+            }
+
+            // Funzione per navigare tra le immagini nell'overlay
+            function navigateOverlay(direction) {
+                currentImageIndex += direction;
+                if (currentImageIndex < 0) {
+                    currentImageIndex = currentCarouselImages.length - 1;
+                } else if (currentImageIndex >= currentCarouselImages.length) {
+                    currentImageIndex = 0;
+                }
+                showOverlayImage(currentCarouselImages[currentImageIndex].dataset.original || currentCarouselImages[currentImageIndex].src);
+            }
+
+            // Funzione per ridimensionare l'iframe di YouTube
+            function resizeIframe() {
+                const iframeVideo1 = document.getElementById('iframe-video1');
+                if (iframeVideo1) {
+                    const width = iframeVideo1.offsetWidth;
+                    const aspectRatio = 16 / 9;
+                    const height = width / aspectRatio;
+                    iframeVideo1.style.height = height + 'px';
+                }
+            }
+
+            // Ridimensiona l'iframe del video all'avvio e al ridimensionamento
+            resizeIframe();
+            window.addEventListener('resize', resizeIframe);
+
+            // Gestione dell'ingrandimento delle immagini
+            images.forEach(img => {
+                img.addEventListener('click', function() {
+                    const originalSrc = this.dataset.original || this.src;
+                    showOverlayImage(originalSrc);
+
+                    // Trova il contenitore del carosello genitore
+                    const carouselContainer = this.closest('[class^="carousel-container-"]');
+                    if (carouselContainer) {
+                        currentCarouselImages = Array.from(carouselContainer.querySelectorAll('img'));
+                        currentImageIndex = currentCarouselImages.indexOf(this);
+                    } else {
+                        currentCarouselImages = [this];
+                        currentImageIndex = 0;
+                    }
+                });
+            });
+
+            overlay.addEventListener('click', function() {
+                this.classList.remove('active');
+                currentCarouselImages = []; // Resetta le immagini del carosello
+                currentImageIndex = 0;
+            });
+
+            // Aggiungi eventi di navigazione all'overlay (scorrimento del mouse)
+            overlay.addEventListener('wheel', function(event) {
+                if (currentCarouselImages.length > 1) {
+                    if (event.deltaY > 0) {
+                        navigateOverlay(1); // Scorrimento verso il basso (o destra)
+                    } else {
+                        navigateOverlay(-1); // Scorrimento verso l'alto (o sinistra)
+                    }
+                }
+            });
+
+            // Inizializzazione dei caroselli Tiny-Slider
+            carouselContainers.forEach(container => {
+                tns({
+                    container: container,
+                    items: 1,
+                    slideBy: 'page',
+                    autoplay: false,
+                    controls: true,
+                    nav: true,
+                    loop: true,
+                    prevButton: false,
+                    nextButton: false
+                });
+            });
+
+            // Inizializzazione di pannellum per l'immagine a 360°
+            if (panoramaContainer) {
+                pannellum.viewer('panorama-container', {
+                    type: 'equirectangular', // Assumi che la tua immagine sia in formato equirettangolare
+                    panorama: 'archivio/cuc.360.001.jpg', // Sostituisci con il percorso effettivo della tua immagine
+                    autoLoad: true,
+                    showControls: true,
+                    // Altre opzioni di configurazione di pannellum possono essere aggiunte qui
+                });
+            }
+
+
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js"></script>
+</body>
+</html>
