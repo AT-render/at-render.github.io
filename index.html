@@ -28,7 +28,7 @@
                 <div id="home-render" class="tab-item">
                     <h3>Reverse engineering</h3>
                     <div class="tab-content">
-                        <img src="archivio/Tosca.WCA.001.png" alt="Render del Progetto Y" data-original="archivio/Tosca.WCA.001.png">
+                        <img src="archivio/Tosca.WCA.001.jpg" alt="Render del Progetto Y" data-original="archivio/Tosca.WCA.001.jpg">
                     </div>
                     <p class="caption">Modello realizzato dalla misurazione dell'oggetto reale.</p>
                 </div>
@@ -143,7 +143,7 @@
                     <div class="tab-content">
                         <div class="carousel-container-2">
                             <div class="carousel-item">
-                                <img src="archivio/OtraxS.jpg" alt="Mini mansardato" data-original="archivio/OtraxS.jpg">
+                                <img src="archivio/OtraxS.png" alt="Mini mansardato" data-original="archivio/OtraxS.png">
                             </div>
                             <div class="carousel-item">
                                 <img src="archivio/OtraxI.jpg" alt="Mini mansardato" data-original="archivio/OtraxI.jpg">
@@ -190,7 +190,7 @@
                 <div class="tab-item">
                     <h3>Texture procedurale</h3>
                     <div class="tab-content">
-                        <img src="archivio/pizza.jpg" alt="Pizza" data-original="archivio/pizza.jpg">
+                        <img src="archivio/pizza.png" alt="Pizza" data-original="archivio/pizza.png">
                     </div>
                     <p class="caption">Il modello è realizzato con materiali ottenuti da texture procedurali</p>
                 </div>
@@ -243,23 +243,14 @@
             const carouselContainers = document.querySelectorAll('[class^="carousel-container-"]'); // Seleziona tutti i caroselli
             const panoramaContainer = document.getElementById('panorama-container'); // Ottieni il contenitore del panorama
 
+
             let currentCarouselImages = [];
             let currentImageIndex = 0;
-             let isOverlayActive = false; // Variabile per tracciare se l'overlay è attivo
 
             // Funzione per mostrare l'immagine nell'overlay
             function showOverlayImage(src) {
                 overlayImage.src = src;
                 overlay.classList.add('active');
-                isOverlayActive = true;
-            }
-
-            // Funzione per nascondere l'overlay
-            function hideOverlayImage() {
-                overlay.classList.remove('active');
-                isOverlayActive = false;
-                currentCarouselImages = []; // Resetta le immagini del carosello
-                currentImageIndex = 0;
             }
 
             // Funzione per navigare tra le immagini nell'overlay
@@ -347,24 +338,6 @@
                     showControls: true,
                     // Altre opzioni di configurazione di pannellum possono essere aggiunte qui
                 });
-            }
-
-            // **NUOVO CODICE PER CHIUDERE L'OVERLAY AL REFRESH**
-            if (sessionStorage.getItem('isOverlayOpen') === 'true') {
-                sessionStorage.removeItem('isOverlayOpen');
-            }
-
-            window.addEventListener('beforeunload', function() {
-                if (isOverlayActive) {
-                    sessionStorage.setItem('isOverlayOpen', 'true');
-                } else {
-                    sessionStorage.removeItem('isOverlayOpen');
-                }
-            });
-
-            if (sessionStorage.getItem('isOverlayOpen') === 'true') {
-                overlay.classList.remove('active');
-                isOverlayActive = false;
             }
 
 
