@@ -243,14 +243,23 @@
             const carouselContainers = document.querySelectorAll('[class^="carousel-container-"]'); // Seleziona tutti i caroselli
             const panoramaContainer = document.getElementById('panorama-container'); // Ottieni il contenitore del panorama
 
-
             let currentCarouselImages = [];
             let currentImageIndex = 0;
+             let isOverlayActive = false; // Variabile per tracciare se l'overlay è attivo
 
             // Funzione per mostrare l'immagine nell'overlay
             function showOverlayImage(src) {
                 overlayImage.src = src;
                 overlay.classList.add('active');
+                isOverlayActive = true;
+            }
+
+            // Funzione per nascondere l'overlay
+            function hideOverlayImage() {
+                overlay.classList.remove('active');
+                isOverlayActive = false;
+                currentCarouselImages = []; // Resetta le immagini del carosello
+                currentImageIndex = 0;
             }
 
             // Funzione per navigare tra le immagini nell'overlay
@@ -338,6 +347,24 @@
                     showControls: true,
                     // Altre opzioni di configurazione di pannellum possono essere aggiunte qui
                 });
+            }
+
+            // **NUOVO CODICE PER CHIUDERE L'OVERLAY AL REFRESH**
+            if (sessionStorage.getItem('isOverlayOpen') === 'true') {
+                sessionStorage.removeItem('isOverlayOpen');
+            }
+
+            window.addEventListener('beforeunload', function() {
+                if (isOverlayActive) {
+                    sessionStorage.setItem('isOverlayOpen', 'true');
+                } else {
+                    sessionStorage.removeItem('isOverlayOpen');
+                }
+            });
+
+            if (sessionStorage.getItem('isOverlayOpen') === 'true') {
+                overlay.classList.remove('active');
+                isOverlayActive = false;
             }
 
 
