@@ -1,103 +1,49 @@
+/* Stili di base dal precedente style.css */
 body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
     background-color: #f4f4f4;
     color: #333;
     line-height: 1.6;
-}
-
-header {
-    background-color: #fff;
-    padding: 1em;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centra gli elementi orizzontalmente */
-}
-
-.logo-title-container {
-    display: flex; /* Dispone logo e titolo affiancati */
-    align-items: flex-start; /* Allinea gli elementi all'inizio (in alto) */
-    margin-bottom: 5px;
-}
-
-.logo-column {
-    margin-right: 10px; /* Spazio tra logo e testo */
-}
-
-.logo-column img {
-    height: 50px; /* Imposta l'altezza del logo */
-}
-
-.title-column {
-    display: flex;
-    flex-direction: column; /* Dispone AT-render e sottotitolo verticalmente */
-    align-items: flex-start; /* Allinea il testo a sinistra */
-}
-
-.title-column h1 {
-    margin: 0 0 0 0; /* Margine inferiore per separare AT-render dal sottotitolo */
-    color: #222;
-    font-size: 1.8em;
-    white-space: nowrap;
-}
-
-.title-column .sotto-titolo {
-    font-weight: 400;
-    color: #555;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0 0 0; /* Spazio sopra la navigazione */
-    display: flex;
-    justify-content: center;
-}
-
-nav li {
-    margin: 0 1em;
-}
-
-nav a {
-    text-decoration: none;
-    color: #555;
-    font-weight: bold;
-}
-
-nav a:hover {
-    color: #007bff;
+    -webkit-text-size-adjust: 100%;
 }
 
 main {
-    padding: 20px;
+    padding: 1.25em;
 }
 
 #lavori h2 {
     text-align: center;
-    margin-bottom: 1.5em;
+    margin-bottom: 1em;
     color: #222;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
+    font-size: 1.3em;
 }
 
 .tab-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Imposta una larghezza minima maggiore */
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+    gap: 1.25em;
+}
+
+@media (min-width: 600px) {
+    .tab-container {
+        grid-template-columns: repeat(auto-fit, minmax(37.5em, 1fr));
+    }
 }
 
 .tab-item {
     background-color: #fff;
     border: 1px solid #eee;
-    border-radius: 5px;
+    border-radius: 0.3125em;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.125em 0.3125em rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 15px;
+    margin-bottom: 1.25em;
+    padding: 0.9375em;
 }
 
 .tab-item.active {
@@ -106,21 +52,13 @@ main {
 
 .tab-content {
     width: 100%;
-    padding: 10px;
+    padding: 0.625em;
     display: flex;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-.tab-content img {
-    display: block;
-    max-width: 100%;
-    height: auto; /* Mantiene le proporzioni */
-    max-height: 420px; /* Imposta l'altezza massima */
-    object-fit: contain; /* Opzionale: Assicura che l'immagine stia completamente dentro il contenitore senza ritagli */
+    margin-top: 0.625em;
+    margin-bottom: 0.625em;
 }
 
 .tab-content img,
@@ -129,12 +67,14 @@ main {
     display: block;
     max-width: 100%;
     height: auto;
+    max-height: 26.25em;
+    object-fit: contain;
 }
 
 .tab-item h3 {
-    padding: 15px;
+    padding: 0.9375em;
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1em;
     background-color: #f9f9f9;
     border-bottom: 1px solid #eee;
     font-family: 'Montserrat', sans-serif;
@@ -145,9 +85,9 @@ main {
 }
 
 .tab-item p.caption {
-    padding: 10px 15px;
+    padding: 0.625em 0.9375em;
     margin: 0;
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #666;
     font-family: 'Montserrat', sans-serif;
     text-align: center;
@@ -158,17 +98,18 @@ main {
 .action-button,
 .action-link {
     display: block;
-    padding: 10px 15px;
+    padding: 0.625em 0.9375em;
     text-align: center;
     text-decoration: none;
     background-color: #007bff;
     color: #fff;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 0.5em 0.5em;
     transition: background-color 0.3s ease;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     width: 100%;
     box-sizing: border-box;
+    font-size: 0.9em;
 }
 
 .action-button:hover,
@@ -180,10 +121,10 @@ main {
 #about {
     background-color: #fff;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5em;
+    padding: 1.25em;
+    margin-top: 1.25em;
+    box-shadow: 0 0.125em 0.3125em rgba(0, 0, 0, 0.1);
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -191,10 +132,11 @@ main {
 #about h2 {
     color: #222;
     margin-top: 0;
-    margin-bottom: 1em;
+    margin-bottom: 0.8em;
     text-align: center;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
+    font-size: 1.2em;
 }
 
 footer {
@@ -202,19 +144,20 @@ footer {
     padding: 1em;
     background-color: #333;
     color: #fff;
-    margin-top: 20px;
+    margin-top: 1.25em;
     font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em;
 }
 
 .admin-login-button {
     background-color: #5cb85c;
     color: white;
-    padding: 8px 12px;
+    padding: 0.5em 0.75em;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.25em;
     cursor: pointer;
-    font-size: 0.9em;
-    margin-left: 10px;
+    font-size: 0.8em;
+    margin-left: 0.625em;
 }
 
 .admin-login-button:hover {
@@ -224,12 +167,12 @@ footer {
 .edit-button {
     background-color: #007bff;
     color: white;
-    padding: 8px 12px;
+    padding: 0.5em 0.75em;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.25em;
     cursor: pointer;
-    font-size: 0.9em;
-    margin-top: 10px;
+    font-size: 0.8em;
+    margin-top: 0.625em;
     font-family: 'Montserrat', sans-serif;
     font-weight: bold;
     text-decoration: none;
@@ -244,32 +187,33 @@ footer {
 
 /* Stili per il carosello */
 .carousel-container {
-    overflow: hidden; /* Importante per nascondere le immagini fuori dalla vista */
+    overflow: hidden;
 }
 
 .carousel-item {
-    display: none; /* Inizialmente nascondi tutte le immagini */
+    display: none;
 }
 
 .carousel-item img {
     width: 100%;
     height: auto;
-    display: block; /* Rimuove lo spazio extra sotto le immagini inline */
+    display: block;
 }
 
 .tns-nav {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 0.625em;
 }
 
 .tns-nav button {
-    width: 10px;
-    height: 10px;
+    width: 0.625em;
+    height: 0.625em;
     border-radius: 50%;
     border: none;
     background-color: #ccc;
-    margin: 0 5px;
+    margin: 0 0.3125em;
     cursor: pointer;
+    font-size: 0.75em;
 }
 
 .tns-nav button.tns-nav-active {
@@ -283,12 +227,12 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Sfondo semi-trasparente */
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Assicura che sia sopra gli altri elementi */
-    cursor: pointer; /* Indica che si può cliccare per chiudere */
+    z-index: 1000;
+    cursor: pointer;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
@@ -301,7 +245,145 @@ footer {
 }
 
 .image-overlay img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain; /* Assicura che l'immagine stia dentro l'overlay */
+    max-width: 95%;
+    max-height: 95%;
+    object-fit: contain;
+}
+
+/* === INIZIO STILI HEADER === */
+header {
+    display: flex;
+    flex-direction: column; /* Impila gli elementi su schermi piccoli */
+    align-items: center; /* Centra orizzontalmente gli elementi impilati */
+    justify-content: center; /* Centra verticalmente gli elementi (utile se l'header ha altezza fissa) */
+    padding: 15px 20px;
+    background-color: #f8f8f8; /* Sfondo leggermente grigio */
+    border-bottom: 1px solid #eee; /* Leggera linea di separazione inferiore */
+    text-align: center; /* Fallback per centrare elementi inline */
+}
+
+.logo {
+    margin-bottom: 15px; /* Spazio sotto il logo su schermi piccoli */
+}
+
+.logo a {
+    display: inline-flex; /* Permette l'allineamento al centro degli elementi interni */
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+}
+
+.logo img {
+    max-height: 60px;
+    margin-right: 15px;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Allinea il testo a sinistra all'interno del contenitore logo */
+}
+
+.logo-text h1 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #222;
+    line-height: 1.1;
+}
+
+.logo-text p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0; /* Aggiunge un po' di spazio sopra e sotto la navigazione */
+    display: flex;
+    justify-content: center; /* Centra orizzontalmente la navigazione */
+    overflow-x: auto; /* Abilita lo scorrimento orizzontale se necessario */
+    white-space: nowrap; /* Forza su una riga */
+    -webkit-overflow-scrolling: touch; /* Scorrimento inerziale iOS */
+}
+
+nav li {
+    margin: 0 15px;
+}
+
+nav li:first-child {
+    margin-left: 0;
+}
+
+nav a {
+    text-decoration: none;
+    color: #555;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+}
+
+nav a:hover {
+    color: #007bff;
+}
+
+#admin-link-container {
+    margin-top: 15px; /* Spazio sopra il link admin su schermi piccoli */
+}
+
+#admin-link-container a {
+    text-decoration: none;
+    color: #008000;
+    font-size: 0.9em;
+}
+
+#admin-link-container a:hover {
+    text-decoration: underline;
+}
+
+#admin-login-button {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    margin-top: 15px; /* Spazio sopra il bottone admin su schermi piccoli */
+}
+
+#admin-login-button:hover {
+    background-color: #e0e0e0;
+}
+
+/* Responsive design per schermi più grandi */
+@media (min-width: 768px) {
+    header {
+        flex-direction: row; /* Dispone gli elementi in riga su schermi più grandi */
+        justify-content: space-around; /* Distribuisce lo spazio tra gli elementi */
+        align-items: center; /* Centra verticalmente gli elementi sulla riga */
+        text-align: left; /* Reimposta l'allineamento del testo */
+    }
+
+    .logo {
+        margin-bottom: 0; /* Rimuove il margine inferiore su schermi più grandi */
+    }
+
+    nav ul {
+        margin: 0; /* Rimuove il margine sopra e sotto la navigazione */
+        justify-content: center; /* Mantiene la navigazione centrata anche su schermi grandi */
+    }
+
+    nav li {
+        margin: 0 15px;
+    }
+
+    #admin-link-container {
+        margin-top: 0; /* Rimuove il margine superiore su schermi più grandi */
+    }
+
+    #admin-login-button {
+        margin-top: 0; /* Rimuove il margine superiore su schermi più grandi */
+    }
 }

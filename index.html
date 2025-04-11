@@ -19,7 +19,24 @@
     <script type="text/javascript" src="js/libpannellum.js"></script>
 </head>
 <body>
-    <div id="header-container"></div>
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="img/AT_logo.squared.alpha.TOP.web.png" alt="Logo AT-render">
+                <div class="logo-text">
+                    <h1>AT-render</h1>
+                    <p>Modellazione di superficie</p>
+                </div>
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#lavori">Lavori</a></li>
+                <li><a href="#contatti">Contatti</a></li>
+                <li><a href="#about">Chi sono</a></li>
+            </ul>
+        </nav>
+    </header>
 
     <main>
         <section id="lavori">
@@ -143,7 +160,7 @@
                     <div class="tab-content">
                         <div class="carousel-container-2">
                             <div class="carousel-item">
-                                <img src="archivio/OtraxS.png" alt="Mini mansardato" data-original="archivio/OtraxS.png">
+                                <img src="archivio/OtraxS.jpg" alt="Mini mansardato" data-original="archivio/OtraxS.jpg">
                             </div>
                             <div class="carousel-item">
                                 <img src="archivio/OtraxI.jpg" alt="Mini mansardato" data-original="archivio/OtraxI.jpg">
@@ -190,7 +207,7 @@
                 <div class="tab-item">
                     <h3>Texture procedurale</h3>
                     <div class="tab-content">
-                        <img src="archivio/pizza.png" alt="Pizza" data-original="archivio/pizza.png">
+                        <img src="archivio/pizza.jpg" alt="Pizza" data-original="archivio/pizza.jpg">
                     </div>
                     <p class="caption">Il modello è realizzato con materiali ottenuti da texture procedurali</p>
                 </div>
@@ -225,16 +242,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js"></script>
     <script>
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-            })
-            .catch(error => {
-                console.error('Errore nel caricamento dell\'header:', error);
-                document.getElementById('header-container').innerHTML = '<p>Errore nel caricamento dell\'header.</p>';
-            });
-
         document.addEventListener('DOMContentLoaded', function() {
             const iframeVideo1 = document.getElementById('iframe-video1');
             const images = document.querySelectorAll('#lavori .tab-content img');
