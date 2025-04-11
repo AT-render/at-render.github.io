@@ -4,6 +4,7 @@ body {
     background-color: #f4f4f4;
     color: #333;
     line-height: 1.6;
+    -webkit-text-size-adjust: 100%; /* Impedisce l'ingrandimento automatico del testo su mobile */
 }
 
 header {
@@ -11,14 +12,28 @@ header {
     padding: 1em;
     border-bottom: 1px solid #ddd;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Imposta la direzione principale a colonna per mobile */
     align-items: center; /* Centra gli elementi orizzontalmente */
+}
+
+@media (min-width: 768px) {
+    header {
+        flex-direction: row; /* Torna a riga su schermi più grandi */
+        justify-content: space-between; /* Distribuisce lo spazio tra logo e navigazione */
+        padding: 1em 2em; /* Aggiunge un po' di padding laterale su schermi più grandi */
+    }
 }
 
 .logo-title-container {
     display: flex; /* Dispone logo e titolo affiancati */
     align-items: flex-start; /* Allinea gli elementi all'inizio (in alto) */
-    margin-bottom: 5px;
+    margin-bottom: 10px; /* Aumenta il margine per separare meglio dal nav su mobile */
+}
+
+@media (min-width: 768px) {
+    .logo-title-container {
+        margin-bottom: 0; /* Rimuove il margine su schermi più grandi */
+    }
 }
 
 .logo-column {
@@ -27,6 +42,7 @@ header {
 
 .logo-column img {
     height: 50px; /* Imposta l'altezza del logo */
+    max-width: 100%; /* Assicura che non superi la larghezza del contenitore */
 }
 
 .title-column {
@@ -38,13 +54,26 @@ header {
 .title-column h1 {
     margin: 0 0 0 0; /* Margine inferiore per separare AT-render dal sottotitolo */
     color: #222;
-    font-size: 1.8em;
+    font-size: 1.5em; /* Riduce leggermente la dimensione del font su mobile */
     white-space: nowrap;
+}
+
+@media (min-width: 576px) {
+    .title-column h1 {
+        font-size: 1.8em; /* Torna alla dimensione originale su schermi più grandi */
+    }
 }
 
 .title-column .sotto-titolo {
     font-weight: 400;
     color: #555;
+    font-size: 0.9em; /* Leggermente più piccolo su mobile */
+}
+
+@media (min-width: 576px) {
+    .title-column .sotto-titolo {
+        font-size: 1em; /* Torna alla dimensione originale su schermi più grandi */
+    }
 }
 
 nav ul {
@@ -52,17 +81,41 @@ nav ul {
     padding: 0;
     margin: 10px 0 0 0; /* Spazio sopra la navigazione */
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* Impila gli elementi di navigazione su mobile */
+    align-items: center; /* Centra gli elementi di navigazione su mobile */
+}
+
+@media (min-width: 768px) {
+    nav ul {
+        flex-direction: row; /* Torna a riga su schermi più grandi */
+        justify-content: center;
+        margin-top: 0; /* Rimuove il margine superiore su schermi più grandi */
+    }
 }
 
 nav li {
-    margin: 0 1em;
+    margin: 0.5em 0; /* Aggiunge un po' di margine verticale su mobile */
+}
+
+@media (min-width: 768px) {
+    nav li {
+        margin: 0 1em; /* Torna al margine orizzontale su schermi più grandi */
+    }
 }
 
 nav a {
     text-decoration: none;
     color: #555;
     font-weight: bold;
+    display: block; /* Rende l'area cliccabile più grande su mobile */
+    padding: 0.5em 0; /* Aggiunge un po' di padding per l'interazione touch */
+}
+
+@media (min-width: 768px) {
+    nav a {
+        display: inline; /* Torna a inline su schermi più grandi */
+        padding: 0;
+    }
 }
 
 nav a:hover {
@@ -71,6 +124,7 @@ nav a:hover {
 
 main {
     padding: 20px;
+    box-sizing: border-box; /* Assicura che il padding non aumenti la larghezza totale */
 }
 
 #lavori h2 {
@@ -79,12 +133,20 @@ main {
     color: #222;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
+    font-size: 1.8em; /* Dimensione del titolo sezione */
 }
 
 .tab-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Imposta una larghezza minima maggiore */
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Riduce la larghezza minima per adattarsi meglio a schermi più piccoli */
+    gap: 15px; /* Riduce il gap tra gli elementi su mobile */
+}
+
+@media (min-width: 768px) {
+    .tab-container {
+        gap: 20px; /* Torna al gap originale su schermi più grandi */
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Torna alla larghezza minima originale su schermi più grandi */
+    }
 }
 
 .tab-item {
@@ -96,8 +158,16 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 15px;
+    margin-bottom: 15px; /* Riduce il margine inferiore su mobile */
+    padding: 10px; /* Riduce il padding interno su mobile */
+    box-sizing: border-box; /* Assicura che il padding non influenzi le dimensioni */
+}
+
+@media (min-width: 768px) {
+    .tab-item {
+        margin-bottom: 20px; /* Torna al margine inferiore originale su schermi più grandi */
+        padding: 15px; /* Torna al padding interno originale su schermi più grandi */
+    }
 }
 
 .tab-item.active {
@@ -115,26 +185,28 @@ main {
     margin-bottom: 10px;
 }
 
-.tab-content img {
-    display: block;
-    max-width: 100%;
-    height: auto; /* Mantiene le proporzioni */
-    max-height: 420px; /* Imposta l'altezza massima */
-    object-fit: contain; /* Opzionale: Assicura che l'immagine stia completamente dentro il contenitore senza ritagli */
-}
-
 .tab-content img,
 .tab-content video,
 .tab-content iframe {
     display: block;
     max-width: 100%;
     height: auto;
+    max-height: 400px; /* Leggermente inferiore su mobile per adattarsi meglio */
+    object-fit: contain;
+}
+
+@media (min-width: 992px) {
+    .tab-content img,
+    .tab-content video,
+    .tab-content iframe {
+        max-height: 420px; /* Torna all'altezza massima originale su schermi più grandi */
+    }
 }
 
 .tab-item h3 {
-    padding: 15px;
+    padding: 10px; /* Riduce il padding su mobile */
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1.1em; /* Riduce la dimensione del font su mobile */
     background-color: #f9f9f9;
     border-bottom: 1px solid #eee;
     font-family: 'Montserrat', sans-serif;
@@ -144,10 +216,17 @@ main {
     box-sizing: border-box;
 }
 
+@media (min-width: 576px) {
+    .tab-item h3 {
+        font-size: 1.2em; /* Torna alla dimensione originale su schermi più grandi */
+        padding: 15px; /* Torna al padding originale su schermi più grandi */
+    }
+}
+
 .tab-item p.caption {
-    padding: 10px 15px;
+    padding: 8px 10px; /* Riduce il padding su mobile */
     margin: 0;
-    font-size: 0.9em;
+    font-size: 0.85em; /* Riduce leggermente la dimensione del font su mobile */
     color: #666;
     font-family: 'Montserrat', sans-serif;
     text-align: center;
@@ -155,10 +234,17 @@ main {
     box-sizing: border-box;
 }
 
+@media (min-width: 576px) {
+    .tab-item p.caption {
+        font-size: 0.9em; /* Torna alla dimensione originale su schermi più grandi */
+        padding: 10px 15px; /* Torna al padding originale su schermi più grandi */
+    }
+}
+
 .action-button,
 .action-link {
     display: block;
-    padding: 10px 15px;
+    padding: 8px 10px; /* Riduce il padding su mobile */
     text-align: center;
     text-decoration: none;
     background-color: #007bff;
@@ -169,6 +255,15 @@ main {
     font-weight: 700;
     width: 100%;
     box-sizing: border-box;
+    font-size: 0.95em; /* Leggermente più piccolo su mobile */
+}
+
+@media (min-width: 576px) {
+    .action-button,
+    .action-link {
+        padding: 10px 15px; /* Torna al padding originale su schermi più grandi */
+        font-size: 1em; /* Torna alla dimensione originale su schermi più grandi */
+    }
 }
 
 .action-button:hover,
@@ -181,10 +276,19 @@ main {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
+    padding: 15px; /* Riduce il padding su mobile */
+    margin-top: 15px; /* Riduce il margine superiore su mobile */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box; /* Assicura che il padding non influenzi le dimensioni */
+}
+
+@media (min-width: 768px) {
+    #contatti,
+    #about {
+        padding: 20px; /* Torna al padding originale su schermi più grandi */
+        margin-top: 20px; /* Torna al margine superiore originale su schermi più grandi */
+    }
 }
 
 #contatti h2,
@@ -195,6 +299,26 @@ main {
     text-align: center;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
+    font-size: 1.6em; /* Riduce leggermente la dimensione del font su mobile */
+}
+
+@media (min-width: 576px) {
+    #contatti h2,
+    #about h2 {
+        font-size: 1.8em; /* Torna alla dimensione originale su schermi più grandi */
+    }
+}
+
+#contatti p,
+#about p {
+    font-size: 0.9em; /* Leggermente più piccolo su mobile */
+}
+
+@media (min-width: 576px) {
+    #contatti p,
+    #about p {
+        font-size: 1em; /* Torna alla dimensione originale su schermi più grandi */
+    }
 }
 
 footer {
@@ -202,8 +326,16 @@ footer {
     padding: 1em;
     background-color: #333;
     color: #fff;
-    margin-top: 20px;
+    margin-top: 15px; /* Riduce il margine superiore su mobile */
     font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em; /* Leggermente più piccolo su mobile */
+}
+
+@media (min-width: 576px) {
+    footer {
+        margin-top: 20px; /* Torna al margine superiore originale su schermi più grandi */
+        font-size: 1em; /* Torna alla dimensione originale su schermi più grandi */
+    }
 }
 
 .admin-login-button {
@@ -213,8 +345,15 @@ footer {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.9em;
-    margin-left: 10px;
+    font-size: 0.85em; /* Leggermente più piccolo su mobile */
+    margin-left: 5px; /* Riduce il margine sinistro su mobile */
+}
+
+@media (min-width: 576px) {
+    .admin-login-button {
+        font-size: 0.9em; /* Torna alla dimensione originale su schermi più grandi */
+        margin-left: 10px; /* Torna al margine sinistro originale su schermi più grandi */
+    }
 }
 
 .admin-login-button:hover {
@@ -234,8 +373,14 @@ footer {
     font-weight: bold;
     text-decoration: none;
     text-align: center;
-    width: 80%;
+    width: 90%; /* Aumenta la larghezza su mobile */
     box-sizing: border-box;
+}
+
+@media (min-width: 576px) {
+    .edit-button {
+        width: 80%; /* Torna alla larghezza originale su schermi più grandi */
+    }
 }
 
 .edit-button:hover {
@@ -263,13 +408,21 @@ footer {
 }
 
 .tns-nav button {
-    width: 10px;
-    height: 10px;
+    width: 8px; /* Leggermente più piccolo su mobile */
+    height: 8px; /* Leggermente più piccolo su mobile */
     border-radius: 50%;
     border: none;
     background-color: #ccc;
-    margin: 0 5px;
+    margin: 0 3px; /* Riduce il margine su mobile */
     cursor: pointer;
+}
+
+@media (min-width: 576px) {
+    .tns-nav button {
+        width: 10px; /* Torna alla dimensione originale su schermi più grandi */
+        height: 10px; /* Torna alla dimensione originale su schermi più grandi */
+        margin: 0 5px; /* Torna al margine originale su schermi più grandi */
+    }
 }
 
 .tns-nav button.tns-nav-active {
@@ -285,23 +438,4 @@ footer {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8); /* Sfondo semi-trasparente */
     display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Assicura che sia sopra gli altri elementi */
-    cursor: pointer; /* Indica che si può cliccare per chiudere */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
-}
-
-.image-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.image-overlay img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain; /* Assicura che l'immagine stia dentro l'overlay */
-}
+    justify
