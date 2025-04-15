@@ -250,6 +250,15 @@ footer {
     object-fit: contain;
 }
 
+.tns-controls {
+  text-align: center; /* Allinea il contenuto inline (i bottoni) al centro */
+}
+
+.tns-controls button {
+  display: inline-block; /* Assicurati che i bottoni siano inline-block */
+  margin: 0 7px;
+}
+
 /* === INIZIO STILI HEADER === */
 header {
     display: flex;
