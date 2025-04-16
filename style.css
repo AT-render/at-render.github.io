@@ -396,3 +396,8 @@ nav a:hover {
         margin-top: 0; /* Rimuove il margine superiore su schermi più grandi */
     }
 }
+
+/* Stili per l'istruzione AR */
+.ar-instruction {
+    display: none; /* Nascosto di default via CSS */
+}
