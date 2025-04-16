@@ -12,6 +12,10 @@ main {
     padding: 1.25em;
 }
 
+a:hover {
+    color: #007bff !important;
+}
+
 #lavori h2 {
     text-align: center;
     margin-bottom: 1em;
@@ -331,10 +335,6 @@ nav a {
     font-weight: bold;
     transition: color 0.3s ease;
     white-space: nowrap;
-}
-
-nav a:hover {
-    color: #007bff;
 }
 
 #admin-link-container {
