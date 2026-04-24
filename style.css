@@ -12,6 +12,11 @@ main {
     padding: 1.25em;
 }
 
+.big_f{
+    font-size: 125%;
+    font-weight: bold;
+}
+
 a:hover {
     color: #007bff !important;
 }
