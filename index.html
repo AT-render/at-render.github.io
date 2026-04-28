@@ -122,9 +122,9 @@
                     <h3>Miniappartamento mansardato</h3>
                     <div class="tab-content">
                         <div class="carousel-container-1">
-                            <div class="carousel-item"><img src="archivio/Canussio.001.jpg" alt="Render mansarda arredata vista 1" data-original="archivio/Canussio.001.jpg"></div>
-                            <div class="carousel-item"><img src="archivio/Canussio.002.jpg" alt="Render mansarda arredata vista 2" data-original="archivio/Canussio.002.jpg"></div>
-                            <div class="carousel-item"><img src="archivio/Canussio.003.jpg" alt="Render mansarda arredata vista 3" data-original="archivio/Canussio.003.jpg"></div>
+                            <div><img src="archivio/Canussio.001.jpg" alt="Render mansarda arredata vista 1" data-original="archivio/Canussio.001.jpg"></div>
+                            <div><img src="archivio/Canussio.002.jpg" alt="Render mansarda arredata vista 2" data-original="archivio/Canussio.002.jpg"></div>
+                            <div><img src="archivio/Canussio.003.jpg" alt="Render mansarda arredata vista 3" data-original="archivio/Canussio.003.jpg"></div>
                         </div>
                     </div>
                     <p class="caption">Ricostruzione <b>fedele</b> di una piccola unità immobiliare.</p>
@@ -142,8 +142,8 @@
                     <h3>Texture procedurale</h3>
                     <div class="tab-content">
                         <div class="carousel-container-3">
-                            <div class="carousel-item"><img src="archivio/Fuel.pump.001.jpg" alt="Modellazione 3D pompa benzina vintage - texture procedurale" data-original="archivio/Fuel.pump.001.jpg"></div>
-                            <div class="carousel-item"><img src="archivio/Fuel.pump.002.jpg" alt="Dettaglio materiali procedurali 3D" data-original="archivio/Fuel.pump.002.jpg"></div>
+                            <div><img src="archivio/Fuel.pump.001.jpg" alt="Modellazione 3D pompa benzina vintage - texture procedurale" data-original="archivio/Fuel.pump.001.jpg"></div>
+                            <div><img src="archivio/Fuel.pump.002.jpg" alt="Dettaglio materiali procedurali 3D" data-original="archivio/Fuel.pump.002.jpg"></div>
                         </div>
                     </div>
                     <p class="caption">Modello 3D realizzato con materiali ottenuti da <b>texture procedurali</b></p>
@@ -166,7 +166,7 @@
             </div>
             <h2>Chi sono</h2>
             <p style="text-align: justify; line-height: 1.65; letter-spacing: 0.08em; font-size: 1.08em; color: #555555; font-family: 'EB Garamond', serif;">
-                Dalla <span style="font-weight: bold; color: #20639B;">modellazione millimetrica</span> di un complemento d'arredo alla regia di un'animazione architettonica: mi chiamo <span style="font-weight: bold; color: #20639B;">Andrea</span> e sono un modellatore 3D <span style="font-weight: bold; color: #20639B;">specializzato in interior design</span>. In un mondo saturo di immagini generiche ed approssimate, scelgo la strada della <span style="font-weight: bold; color: #20639B;">cura maniacale</span> per il dettaglio e della fedeltà materica. Supporto studi e professionisti nella creazione di visualizzazioni efficaci, dove la passione per il design si fonde con una <span style="font-weight: bold; color: #20639B;">solida competenza tecnica decennale</span>.
+                Dalla <span class="big_f">modellazione millimetrica</span> di un complemento d'arredo alla regia di un'animazione architettonica: mi chiamo <span class="big_f">Andrea</span> e sono un modellatore 3D <span class="big_f">specializzato in interior design</span>. In un mondo saturo di immagini generiche ed approssimate, scelgo la strada della <span class="big_f">cura maniacale</span> per il dettaglio e della fedeltà materica. Supporto studi e professionisti nella creazione di visualizzazioni efficaci, dove la passione per il design si fonde con una <span class="big_f">solida competenza tecnica decennale</span>.
             </p>
         </section>
     </main>
@@ -181,7 +181,52 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js"></script>
     <script>
-        // ... (il tuo script rimane invariato, ho solo pulito la doppia inclusione esterna)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inizializzazione Carosello 1
+            if (document.querySelector('.carousel-container-1')) {
+                tns({
+                    container: '.carousel-container-1',
+                    items: 1,
+                    slideBy: 'page',
+                    autoplay: true,
+                    autoplayButtonOutput: false,
+                    nav: true,
+                    controls: false,
+                    mouseDrag: true
+                });
+            }
+
+            // Inizializzazione Carosello 3
+            if (document.querySelector('.carousel-container-3')) {
+                tns({
+                    container: '.carousel-container-3',
+                    items: 1,
+                    slideBy: 'page',
+                    autoplay: true,
+                    autoplayButtonOutput: false,
+                    nav: true,
+                    controls: false,
+                    mouseDrag: true
+                });
+            }
+
+            // Lightbox per ingrandimento immagini
+            const overlay = document.querySelector('.image-overlay');
+            const overlayImg = overlay.querySelector('img');
+            
+            document.addEventListener('click', function(e) {
+                if (e.target.tagName === 'IMG' && e.target.closest('.tab-content')) {
+                    const img = e.target;
+                    const src = img.getAttribute('data-original') || img.src;
+                    overlayImg.src = src;
+                    overlay.classList.add('active');
+                }
+                
+                if (e.target.closest('.image-overlay')) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
