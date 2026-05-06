@@ -161,7 +161,6 @@ nav a {
     border-radius: 4px;
 }
 
-/* Stili specifici per i video */
 .video-animazione {
     width: 100%;
     height: auto;
@@ -188,6 +187,33 @@ nav a {
     text-align: center;
     width: 100%;
     box-sizing: border-box;
+}
+
+/* =========================================
+   MODIFICA RICHIESTA: HERO IMAGE (CG3.PH.RI)
+   ========================================= */
+@media (min-width: 768px) {
+    .hero-item {
+        height: 100vh; /* Altezza massima dello schermo */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        /* Eredita sfondo bianco e ombra da .tab-item */
+    }
+
+    .hero-item .tab-content {
+        flex-grow: 1; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .hero-item .tab-content img {
+        max-height: 100% !important; /* Visualizzazione a tutto schermo */
+        width: auto;
+        object-fit: contain; /* Evita il cropping */
+    }
 }
 
 /* =========================================
