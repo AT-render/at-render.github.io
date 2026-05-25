@@ -245,6 +245,14 @@ html {
     text-align: center;
 }
 
+.portfolio-item iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* mantiene proporzioni video */
+    height: auto;
+    min-height: 250px; /* garantisce altezza minima coerente */
+    border-radius: 8px;
+}
+
 .portfolio-item img,
 .portfolio-item video,
 .portfolio-item iframe,
