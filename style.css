@@ -264,9 +264,9 @@ html {
 }
 
 .portfolio-item iframe, .portfolio-item model-viewer {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    height: auto;
+    width: 100%; !important
+    aspect-ratio: 16 / 9; !important
+    height: auto; !important
     min-height: 250px;
     border-radius: 8px;
 }
