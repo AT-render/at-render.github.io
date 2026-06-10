@@ -430,3 +430,30 @@ model-viewer {
         font-size: 0.8rem;
     }
 }
+
+/* =========================================
+  RIDUZIONE SATURAZIONE VIDEO SOLO SU MOBILE
+========================================= */
+/* ==========================================
+   1. SMARTPHONE IN VERTICALE (Portrait)
+   Schermo stretto (<480px) + Alta densità pixel
+   ========================================== */
+@media (max-width: 480px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2),
+       (max-width: 480px) and (orientation: portrait) and (min-resolution: 192dpi) {
+  .video-low-sat {
+    filter: saturate(85%);
+    will-change: filter;
+  }
+}
+
+/* ==========================================
+   2. SMARTPHONE IN ORIZZONTALE (Landscape)
+   Schermo più largo (<932px) + Alta densità pixel
+   ========================================== */
+@media (max-width: 932px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2),
+       (max-width: 932px) and (orientation: landscape) and (min-resolution: 192dpi) {
+  .video-low-sat {
+    filter: saturate(85%);
+    will-change: filter;
+  }
+}
