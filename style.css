@@ -451,20 +451,21 @@ model-viewer {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.85); /* più elegante */
+    background: rgba(0,0,0,0.85);
     justify-content: center;
     align-items: center;
-    padding: 40px; /* margine attorno al contenuto */
+    padding: 40px; /* margine attorno */
     box-sizing: border-box;
 }
 
 /* Popup content */
 .ar-video-popup-content {
-    background: #111; /* sfondo scuro elegante */
+    background: #111;
     padding: 20px;
     border-radius: 14px;
-    max-width: 900px;
     width: 100%;
+    max-width: 700px; /* ← LIMITA LA LARGHEZZA SU DESKTOP */
+    margin: 0 auto;
     position: relative;
     box-shadow: 0 8px 30px rgba(0,0,0,0.4);
 }
@@ -475,6 +476,7 @@ model-viewer {
     border-radius: 10px;
     display: block;
 }
+
 
 /* Close button */
 .ar-video-close {
