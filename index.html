@@ -388,22 +388,30 @@
             const popup = document.getElementById("arVideoPopup");
             const trigger = document.querySelector(".ar-video-trigger");
             const closeBtn = document.querySelector(".ar-video-close");
+            const video = popup.querySelector("video"); // ← QUESTA È LA PARTE CHE MANCA
 
             trigger.addEventListener("click", function(e) {
                 e.preventDefault();
                 popup.style.display = "flex";
+                video.currentTime = 0;   // riparte dall'inizio
+                video.play();            // autoplay
             });
 
             closeBtn.addEventListener("click", function() {
                 popup.style.display = "none";
+                video.pause();
+                video.currentTime = 0;   // reset
             });
 
             popup.addEventListener("click", function(e) {
                 if (e.target === popup) {
                     popup.style.display = "none";
+                    video.pause();
+                    video.currentTime = 0;
                 }
             });
         });
+
         </script>
 
 </body>
