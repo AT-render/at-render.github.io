@@ -166,9 +166,21 @@
 
             <div class="portfolio-item">
                 <model-viewer src="3D_models/Lilly.SCA.glb" auto-rotate camera-controls ar></model-viewer>
-                <p>Modello AR – posizionabile in scala reale su mobile</p>
+                <p>Modello AR – posizionabile in scala reale</p>
+                <a href="#" class="ar-video-trigger"><strong>--> Prova su MOBILE o clicca e guarda il video <--</strong></a>
             </div>
 
+        </div>
+
+        <!-- POPUP VIDEO -->
+        <div class="ar-video-popup" id="arVideoPopup">
+            <div class="ar-video-popup-content">
+                <span class="ar-video-close">&times;</span>
+                <video controls>
+                    <source src="archivio/AR_lilly.mp4" type="video/mp4">
+                    Il tuo browser non supporta il video.
+                </video>
+            </div>
         </div>
 
         <!-- ARCHITETTURA & INTERIOR -->
@@ -370,5 +382,29 @@
             });
         });
     </script>
+<!-- PopUp video su AR Lilly-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const popup = document.getElementById("arVideoPopup");
+            const trigger = document.querySelector(".ar-video-trigger");
+            const closeBtn = document.querySelector(".ar-video-close");
+
+            trigger.addEventListener("click", function(e) {
+                e.preventDefault();
+                popup.style.display = "flex";
+            });
+
+            closeBtn.addEventListener("click", function() {
+                popup.style.display = "none";
+            });
+
+            popup.addEventListener("click", function(e) {
+                if (e.target === popup) {
+                    popup.style.display = "none";
+                }
+            });
+        });
+        </script>
+
 </body>
 </html>
