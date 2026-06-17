@@ -31,10 +31,36 @@
       transform: translateX(-50%);
       z-index: 100;
       display: flex;
-      gap: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 10px;
+      align-items: center;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 12px 20px;
       border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .picker-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      font-size: 14px;
+      border-left: 1px solid #555;
+      padding-left: 15px;
+    }
+    input[type="color"] {
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      background: none;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    input[type="color"]::-webkit-color-swatch {
+      border: 2px solid #fff;
+      border-radius: 50%;
     }
     button {
       background-color: #333;
@@ -57,6 +83,11 @@
     <button id="btn-marmo">Top Materiale 001</button>
     <button id="btn-noce">Top Materiale 002</button>
     <button id="btn-vetro">Top Materiale 003</button>
+    
+    <div class="picker-container">
+      <label for="color-gambe">Colore Gambe:</label>
+      <input type="color" id="color-gambe" value="#ffffff">
+    </div>
   </div>
 
   <script type="module">
@@ -94,6 +125,7 @@
     controls.target.set(0, 0.5, 0); 
 
     let meshTop = null;
+    let materialeGambe = null; // Memorizzerà il materiale Leg_Mat
     const materialiBlender = {};
 
     const loader = new GLTFLoader();
@@ -107,7 +139,6 @@
           if (matInfo.name === 'Top_MAT.001' || matInfo.name === 'Top_MAT.002' || matInfo.name === 'Top_MAT.003') {
             gltf.parser.getDependency('material', index).then((materialePronto) => {
               materialiBlender[matInfo.name] = materialePronto;
-              // console.log(`Caricato in cache materiale: ${matInfo.name}`);
             });
           }
         });
@@ -115,35 +146,37 @@
 
       tavoloModello.traverse((child) => {
         if (child.isMesh && child.material) {
+          // Rilevamento mesh del Top
           if (child.material.name === 'Top_MAT.001' || child.material.name === 'Top_MAT') {
             meshTop = child;
             materialiBlender['Top_MAT.001'] = child.material;
           }
+          
+          // Rilevamento materiale delle gambe (Leg_Mat)
+          if (child.material.name === 'Leg_Mat') {
+            materialeGambe = child.material;
+            
+            // Sincronizza il color picker con il colore iniziale del file di Blender
+            const coloreIniziale = '#' + materialeGambe.color.getHexString();
+            document.getElementById('color-gambe').value = coloreIniziale;
+          }
         }
       });
 
-      // console.log("✅ Inizializzazione completata.");
     }, undefined, (error) => {
-      // console.error('Errore nel caricamento del file .glb:', error);
+      console.error('Errore nel caricamento del file .glb:', error);
     });
 
     function applicaMaterialeNativo(nomeMateriale) {
-      if (!meshTop) {
-        // console.warn("Attendi: la mesh del top non è ancora stata caricata completamente.");
-        return;
-      }
-      
+      if (!meshTop) return;
       const materialeScelto = materialiBlender[nomeMateriale];
-      
       if (materialeScelto) {
         meshTop.material = materialeScelto;
         meshTop.material.needsUpdate = true;
-        // console.log(`[OK] Cambiato materiale in: ${nomeMateriale}`);
-      } else {
-        // console.error(`[ERRORE] Il materiale "${nomeMateriale}" non è pronto o non esiste nel file .glb.`);
       }
     }
 
+    // Listener per i pulsanti del Top
     document.getElementById('btn-marmo').addEventListener('click', () => {
       applicaMaterialeNativo('Top_MAT.001');
     });
@@ -154,6 +187,14 @@
 
     document.getElementById('btn-vetro').addEventListener('click', () => {
       applicaMaterialeNativo('Top_MAT.003');
+    });
+
+    // Evento per la gestione del Color Picker
+    document.getElementById('color-gambe').addEventListener('input', (event) => {
+      if (materialeGambe) {
+        // Aggiorna il colore convertendo la stringa HEX in un colore Three.js
+        materialeGambe.color.set(event.target.value);
+      }
     });
 
     function animate() {
