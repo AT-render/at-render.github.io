@@ -117,7 +117,7 @@
       tavoloModello.traverse((child) => {
         if (child.isMesh && child.material) {
           // Identifica l'elemento che ha caricato il primo materiale (Top_MAT.001 o Top_MAT)
-          if (child.material.name.includes('Top_MAT')) {
+          if (child.material.name.includes('Top_MAT.001')) {
             meshTop = child;
           }
         }
