@@ -54,126 +54,135 @@
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.164/examples/jsm/loaders/GLTFLoader.js';
     import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.164/examples/jsm/controls/OrbitControls.js';
 
-    // 1. Scena
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1a1a);
-
-    // 2. Camera (Posizionata a circa 2.5 metri di distanza, ottima per un tavolo di 2 metri)
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(2, 1.8, 2.5); 
-
-    // 3. Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    // Ottimizzazioni per la resa cromatica dei modelli Blender
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
-    document.body.appendChild(renderer.domElement);
-
-    // 4. Illuminazione da Studio (Essenziale per vedere riflessi e forme geometriche reali)
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
-    scene.add(hemiLight);
-
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight1.position.set(5, 8, 5);
-    scene.add(dirLight1);
-
-    const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.6);
-    dirLight2.position.set(-5, 4, -5);
-    scene.add(dirLight2);
-
-    // 5. Controlli Orbitabili (Inquadrano la mezzeria del tavolo a 0.75m di altezza)
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.target.set(0, 0.4, 0); // Centro visivo bilanciato tra basamento e top
-
-    let tavoloModello = null;
-
-    // 6. Caricamento Modello GLB
-    const loader = new GLTFLoader();
-    loader.load('./Lemans.tavolo.glb', (gltf) => {
-      tavoloModello = gltf.scene;
+    // ✅ Avvolgiamo tutto in un listener per essere sicuri che la pagina sia pronta
+    window.addEventListener('DOMContentLoaded', () => {
       
-      // ✅ FIX CORREZIONE SCALA DI BLENDER:
-      // Forziamo la scala del nodo principale a 1 per ignorare lo 0.01 di esportazione
-      tavoloModello.scale.set(1, 1, 1); 
-      
-      scene.add(tavoloModello);
-      console.log('Modello in scala reale caricato con successo!');
+      // 1. Scena
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1a1a);
 
-      // Debug per verificare i componenti attivi nella console del browser
-      tavoloModello.traverse((child) => {
-        if (child.isMesh) {
-          console.log("Componente rilevato:", child.name);
-        }
-      });
+      // 2. Camera (Posizionata per inquadrare correttamente un tavolo in scala metrica)
+      const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(2, 2, 3); 
 
-    }, undefined, (error) => {
-      console.error('Errore nel caricamento del modello:', error);
-    });
-
-    // 7. Gestione Pulsanti e Materiali PBR reali
-    document.getElementById('btn-marmo').addEventListener('click', () => {
-      if (!tavoloModello) return;
-      tavoloModello.traverse((child) => {
-        // Applica al top "Piano.Botte.106x200"
-        if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0x141414,      // Nero profondo Marquinia
-            roughness: 0.05,     // Lucidissimo, quasi a specchio
-            metalness: 0.1
-          });
-        }
-      });
-      console.log('Finitura applicata: Marmo Marquinia');
-    });
-
-    document.getElementById('btn-noce').addEventListener('click', () => {
-      if (!tavoloModello) return;
-      tavoloModello.traverse((child) => {
-        if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0x4a3319,      // Tonalità calda Noce Canaletto
-            roughness: 0.5,      // Satinato/opaco tipico del legno trattato
-            metalness: 0.0
-          });
-        }
-      });
-      console.log('Finitura applicata: Noce Canaletto');
-    });
-
-    document.getElementById('btn-vetro').addEventListener('click', () => {
-      if (!tavoloModello) return;
-      tavoloModello.traverse((child) => {
-        if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0x2c3539,      // Grigio antracite/fumé
-            roughness: 0.1,
-            transparent: true,
-            opacity: 0.5,         // Trasparenza al 50%
-            transmission: 0.9,    // Proprietà fisica di rifrazione del vetro (Three.js 164+)
-            thickness: 0.02
-          });
-        }
-      });
-      console.log('Finitura applicata: Vetro Fumé');
-    });
-
-    // 8. Loop di Animazione
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    // 9. Ridimensionamento dinamico della finestra
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
+      // 3. Renderer
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      document.body.appendChild(renderer.domElement);
+
+      // 4. Luci da studio per valorizzare le geometrie
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+      scene.add(hemiLight);
+
+      const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+      dirLight1.position.set(5, 10, 7.5);
+      scene.add(dirLight1);
+
+      const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+      dirLight2.position.set(-5, 5, -5);
+      scene.add(dirLight2);
+
+      // 5. Controlli Orbitabili (Puntano a 0.5 metri di altezza)
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.target.set(0, 0.5, 0); 
+
+      let tavoloModello = null;
+
+      // 6. Caricamento Modello GLB
+      const loader = new GLTFLoader();
+      loader.load('./Lemans.tavolo.glb', (gltf) => {
+        tavoloModello = gltf.scene;
+        
+        // Forziamo la scala a 1 se l'esportatore ha aggiunto un moltiplicatore ridotto
+        tavoloModello.scale.set(1, 1, 1); 
+        
+        scene.add(tavoloModello);
+        console.log('Modello caricato con successo!');
+
+        tavoloModello.traverse((child) => {
+          if (child.isMesh) {
+            console.log("Componente rilevato:", child.name);
+          }
+        });
+
+      }, undefined, (error) => {
+        console.error('Errore nel caricamento del modello:', error);
+      });
+
+      // 7. Gestione Pulsanti (Ora che siamo sicuri che esistano nel DOM)
+      const btnMarmo = document.getElementById('btn-marmo');
+      const btnNoce = document.getElementById('btn-noce');
+      const btnVetro = document.getElementById('btn-vetro');
+
+      if (btnMarmo) {
+        btnMarmo.addEventListener('click', () => {
+          if (!tavoloModello) return;
+          tavoloModello.traverse((child) => {
+            if (child.isMesh && child.name.includes('Piano.Botte')) {
+              child.material = new THREE.MeshStandardMaterial({
+                color: 0x141414,
+                roughness: 0.05,
+                metalness: 0.1
+              });
+            }
+          });
+          console.log('Applicato: Marmo Marquinia');
+        });
+      }
+
+      if (btnNoce) {
+        btnNoce.addEventListener('click', () => {
+          if (!tavoloModello) return;
+          tavoloModello.traverse((child) => {
+            if (child.isMesh && child.name.includes('Piano.Botte')) {
+              child.material = new THREE.MeshStandardMaterial({
+                color: 0x4a3319,
+                roughness: 0.5,
+                metalness: 0.0
+              });
+            }
+          });
+          console.log('Applicato: Noce Canaletto');
+        });
+      }
+
+      if (btnVetro) {
+        btnVetro.addEventListener('click', () => {
+          if (!tavoloModello) return;
+          tavoloModello.traverse((child) => {
+            if (child.isMesh && child.name.includes('Piano.Botte')) {
+              child.material = new THREE.MeshStandardMaterial({
+                color: 0x2c3539,
+                roughness: 0.1,
+                transparent: true,
+                opacity: 0.5
+              });
+            }
+          });
+          console.log('Applicato: Vetro Fumé');
+        });
+      }
+
+      // 8. Loop di Animazione
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // 9. Ridimensionamento finestra
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
     });
   </script>
 
