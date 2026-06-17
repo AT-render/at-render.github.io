@@ -1,79 +1,48 @@
+// Import dei moduli locali
 import * as THREE from '../js/three.module.js';
 import { GLTFLoader } from '../js/GLTFLoader.js';
 
-let scene, camera, renderer, modello;
-let legsMat, topMat;
+// Inizializzazione scena, camera e renderer
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111111);
 
-init();
-caricaModello();
+const camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+);
+camera.position.set(2, 2, 3);
 
-function init() {
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x111111);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(2, 2, 3);
+// Luci base
+const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+scene.add(light);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+// Loader GLTF
+const loader = new GLTFLoader();
 
-    const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
-    scene.add(light);
+// Caricamento modello
+loader.load('./Lemans.tavolo.glb', (gltf) => {
+    const model = gltf.scene;
+    scene.add(model);
+}, undefined, (error) => {
+    console.error('Errore nel caricamento del modello:', error);
+});
 
-    animate();
-}
-
-function caricaModello() {
-    const loader = new GLTFLoader();
-    loader.load('Lemans.tavolo.glb', (gltf) => {
-        modello = gltf.scene;
-
-        modello.traverse((n) => {
-            if (n.isMesh) {
-                // Estraggo i materiali
-                legsMat = n.material[0]; // Legs_MAT
-                topMat = n.material[1];  // Top_MAT
-            }
-        });
-
-        scene.add(modello);
-    });
-}
-
-function cambiaGambe(tipo) {
-    if (!legsMat) return;
-
-    if (tipo === 'nero') {
-        legsMat.color.set('#111111');
-        legsMat.metalness = 0.8;
-        legsMat.roughness = 0.3;
-    }
-
-    if (tipo === 'metallo') {
-        legsMat.color.set('#aaaaaa');
-        legsMat.metalness = 1;
-        legsMat.roughness = 0.2;
-    }
-}
-
-function cambiaPiano(tipo) {
-    if (!topMat) return;
-
-    if (tipo === 'chiaro') {
-        topMat.color.set('#d8c3a5');
-        topMat.metalness = 0.1;
-        topMat.roughness = 0.8;
-    }
-
-    if (tipo === 'scuro') {
-        topMat.color.set('#5a4632');
-        topMat.metalness = 0.1;
-        topMat.roughness = 0.9;
-    }
-}
-
+// Funzione di rendering
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
+animate();
+
+// Adattamento finestra
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
