@@ -16,31 +16,33 @@
   </style>
 </head>
 <body>
-  <!-- ✅ Script principale come modulo -->
+
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164/build/three.module.js';
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.164/examples/jsm/loaders/GLTFLoader.js';
     import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.164/examples/jsm/controls/OrbitControls.js';
 
-    // Scena
+    // 1. Creazione della Scena
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x111111);
 
-    // Camera
+    // 2. Creazione della Camera
     const camera = new THREE.PerspectiveCamera(
       45,
       window.innerWidth / window.innerHeight,
       0.1,
       100
     );
-    camera.position.set(2, 2, 3);
+    // Posizioniamo la camera leggermente distante e in alto per vedere bene il tavolo
+    camera.position.set(3, 3, 5);
 
-    // Renderer
+    // 3. Creazione del Renderer (Motore Grafico)
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(renderer.domElement);
 
-    // Luci
+    // 4. Illuminazione della scena
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
     scene.add(hemiLight);
 
@@ -48,34 +50,43 @@
     dirLight.position.set(5, 10, 7.5);
     scene.add(dirLight);
 
-    // Controlli orbitali
+    // 5. Controlli del Mouse (OrbitControls)
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
+    controls.enableDamping = true; // Rende il movimento più fluido ed elastico
     controls.dampingFactor = 0.05;
-    controls.target.set(0, 1, 0);
+    controls.target.set(0, 0, 0); // Punta il centro della scena
 
-    // Loader GLTF
+    // 6. Caricamento del Modello 3D (.glb)
+    // NOTA: 'Lemans.tavolo.glb' ha la 't' minuscola come sul tuo repository GitHub
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
       scene.add(gltf.scene);
+      console.log('Modello caricato con successo!');
     }, undefined, (error) => {
       console.error('Errore nel caricamento del modello:', error);
     });
 
-    // Animazione
+    // 7. Ciclo di Animazione Continuo (Mancava nel vecchio file)
     function animate() {
       requestAnimationFrame(animate);
+
+      // Aggiorna l'inerzia dei controlli del mouse
       controls.update();
+
+      // Disegna la scena dal punto di vista della camera
       renderer.render(scene, camera);
     }
+
+    // Avvia l'animazione per la prima volta
     animate();
 
-    // Resize
+    // 8. Gestione del ridimensionamento della finestra del browser
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
+
 </body>
 </html>
