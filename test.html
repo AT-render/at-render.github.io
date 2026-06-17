@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizzazione modello 3D | AT‑render</title>
+  
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../js/three.js",
+        "three/addons/": "../js/"
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #1a1a1a;
+      font-family: sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    #menu {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="menu">
+    <button id="btn-marmo">Top Marmo Marquinia</button>
+    <button id="btn-noce">Top Noce Canaletto</button>
+    <button id="btn-vetro">Top Vetro Fumé</button>
+  </div>
+
+  <script type="module">
+    // Grazie alla mappa sopra, il browser sa che "three" significa "../js/three.js"
+    // e "three/addons/..." significa andare a cercare nella tua cartella "../js/..."
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/OrbitControls.js';
+
+    // 1. Configurazione Scena
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a1a1a);
+
+    // 2. Configurazione Camera
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(2, 2, 3); 
+
+    // 3. Configurazione Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    document.body.appendChild(renderer.domElement);
+
+    // 4. Illuminazione
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+    scene.add(hemiLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight1.position.set(5, 10, 7.5);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight2.position.set(-5, 5, -5);
+    scene.add(dirLight2);
+
+    // 5. Controlli OrbitControls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.target.set(0, 0.5, 0); 
+
+    let tavoloModello = null;
+
+    // 6. Caricamento Modello .glb (Si trova nella stessa cartella 'interazioni' di questo HTML)
+    const loader = new GLTFLoader();
+    loader.load('./Lemans.tavolo.glb', (gltf) => {
+      tavoloModello = gltf.scene;
+      
+      // Correzione scala metrica (forza a 1 ignorando lo 0.01 di Blender)
+      tavoloModello.scale.set(1, 1, 1); 
+      
+      scene.add(tavoloModello);
+      console.log('Modello 3D caricato con successo!');
+    }, undefined, (error) => {
+      console.error('Errore nel caricamento del modello:', error);
+    });
+
+    // 7. Interazione pulsanti materiali
+    document.getElementById('btn-marmo').addEventListener('click', () => {
+      if (!tavoloModello) return;
+      tavoloModello.traverse((child) => {
+        if (child.isMesh && child.name.includes('Piano.Botte')) {
+          child.material = new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.05, metalness: 0.1 });
+        }
+      });
+    });
+
+    document.getElementById('btn-noce').addEventListener('click', () => {
+      if (!tavoloModello) return;
+      tavoloModello.traverse((child) => {
+        if (child.isMesh && child.name.includes('Piano.Botte')) {
+          child.material = new THREE.MeshStandardMaterial({ color: 0x4a3319, roughness: 0.5, metalness: 0.0 });
+        }
+      });
+    });
+
+    document.getElementById('btn-vetro').addEventListener('click', () => {
+      if (!tavoloModello) return;
+      tavoloModello.traverse((child) => {
+        if (child.isMesh && child.name.includes('Piano.Botte')) {
+          child.material = new THREE.MeshStandardMaterial({ color: 0x2c3539, roughness: 0.1, transparent: true, opacity: 0.5 });
+        }
+      });
+    });
+
+    // 8. Loop di animazione
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // 9. Ridimensionamento finestra
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+
+</body>
+</html>
