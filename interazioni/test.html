@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualizzazione modello 3D | AT‑render</title>
+  
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../js/three.js",
+        "three/addons/": "../js/"
+      }
+    }
+  </script>
+
   <style>
     body {
       margin: 0;
@@ -50,10 +60,10 @@
   </div>
 
   <script type="module">
-    // ✅ PERCORSI CORRETTI: usciamo da 'interazioni/' ed entriamo in 'js/'
-    import * as THREE from '../js/three.js';
-    import { GLTFLoader } from '../js/GLTFLoader.js';
-    import { OrbitControls } from '../js/OrbitControls.js';
+    // Ora il browser risolve questi import localmente grazie alla mappa sopra!
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/OrbitControls.js';
 
     // 1. Configurazione Scena
     const scene = new THREE.Scene();
@@ -71,7 +81,7 @@
     renderer.toneMappingExposure = 1.2;
     document.body.appendChild(renderer.domElement);
 
-    // 4. Illuminazione scena
+    // 4. Illuminazione della scena
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
     scene.add(hemiLight);
 
@@ -83,7 +93,7 @@
     dirLight2.position.set(-5, 5, -5);
     scene.add(dirLight2);
 
-    // 5. Controlli mouse (OrbitControls)
+    // 5. Controlli mouse
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -91,21 +101,21 @@
 
     let tavoloModello = null;
 
-    // 6. Caricamento Modello .glb (✅ Si trova nella stessa cartella dell'HTML)
+    // 6. Caricamento Modello .glb (Si trova nella stessa cartella 'interazioni' di questo file)
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
       tavoloModello = gltf.scene;
       
-      // Reset della scala metrica a 1 (sovrascrive lo 0.01 di Blender)
+      // Correzione scala metrica (ignora lo 0.01 di Blender sul nodo radice)
       tavoloModello.scale.set(1, 1, 1); 
       
       scene.add(tavoloModello);
-      console.log('Modello 3D caricato con successo localmente!');
+      console.log('Modello 3D caricato con successo!');
     }, undefined, (error) => {
       console.error('Errore nel caricamento del modello:', error);
     });
 
-    // 7. Gestione dei pulsanti materiali
+    // 7. Collegamento pulsanti texturing
     document.getElementById('btn-marmo').addEventListener('click', () => {
       if (!tavoloModello) return;
       tavoloModello.traverse((child) => {
