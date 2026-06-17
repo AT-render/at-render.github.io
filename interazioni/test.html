@@ -80,12 +80,12 @@
 <body>
 
   <div id="menu">
-    <button id="btn-marmo">Top Materiale 001</button>
-    <button id="btn-noce">Top Materiale 002</button>
-    <button id="btn-vetro">Top Materiale 003</button>
+    <button id="btn-marmo">Top Marmo</button>
+    <button id="btn-noce">Top Legno</button>
+    <button id="btn-vetro">Top Vtero Fumè</button>
     
     <div class="picker-container">
-      <label for="color-gambe">Colore Gambe:</label>
+      <label for="color-gambe">Colore Gamba:</label>
       <input type="color" id="color-gambe" value="#ffffff">
     </div>
   </div>
@@ -153,7 +153,7 @@
           }
           
           // Rilevamento materiale delle gambe (Leg_Mat)
-          if (child.material.name === 'Leg_Mat') {
+          if (child.material.name === 'Leg_MAT') {
             materialeGambe = child.material;
             
             // Sincronizza il color picker con il colore iniziale del file di Blender
