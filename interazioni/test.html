@@ -66,7 +66,7 @@
 
     // 1. Configurazione Scena
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1a1a);
+    scene.background = new THREE.Color(0x9c9c9c);
 
     // 2. Configurazione Camera
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -92,118 +92,142 @@
     dirLight2.position.set(-5, 5, -5);
     scene.add(dirLight2);
 
-    // 5. Controlli OrbitControls (Rotazione e Zoom)
+    // 5. Controlli OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.target.set(0, 0.5, 0); 
 
     let tavoloModello = null;
-    let materialeTop = null;  // Conterrà il riferimento a top_MAT
-    let materialeGamba = null; // Conterrà il riferimento a Leg_MAT (se ti servirà in futuro)
+    let materialeTop = null; 
 
-    // 6. Caricamento Modello .glb con Ispezione Diagnostica dei Materiali
+    // 6. Caricamento Modello .glb
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
       tavoloModello = gltf.scene;
-      
-      // Correzione scala radice di Blender (da 0.01 a 1 metro reale)
       tavoloModello.scale.set(1, 1, 1); 
       scene.add(tavoloModello);
       
-      console.log('--- ISPEZIONE STRUTTURA MATERIALI ---');
-
       tavoloModello.traverse((child) => {
         if (child.isMesh) {
-          console.log(`Mesh rilevata: "${child.name}"`);
-          
-          // Caso A: La mesh ha un array di materiali (Multi-Material)
-          if (Array.isArray(child.material)) {
-            child.material.forEach((mat, index) => {
-              console.log(`  -> Slot [${index}]: "${mat.name}"`);
-              if (mat.name.toLowerCase().includes('top')) materialeTop = mat;
-              if (mat.name.toLowerCase().includes('leg')) materialeGamba = mat;
-            });
-          } 
-          // Caso B: La mesh ha un singolo materiale associato
-          else if (child.material) {
-            console.log(`  -> Materiale singolo: "${child.material.name}"`);
-            if (child.material.name.toLowerCase().includes('top')) materialeTop = child.material;
-            if (child.material.name.toLowerCase().includes('leg')) materialeGamba = child.material;
+          if (child.material && child.material.name === 'Top_MAT') {
+            materialeTop = child.material;
           }
         }
       });
 
-      console.log('--------------------------------------');
-
-      // Se abbiamo intercettato il materiale del top, applichiamo il marmo come default iniziale
       if (materialeTop) {
-        console.log(`✅ Successo: Agganciato materiale del top ("${materialeTop.name}")`);
-        impostaMarmo(materialeTop);
-      } else {
-        console.warn("❌ Errore: Nessun materiale nel file GLB contiene la parola 'top' nel nome.");
+        console.log(`✅ Successo: Agganciato materiale del top ("Top_MAT")`);
+        impostaVetro(materialeTop); // 🌟 Impostato come DEFAULT iniziale
       }
 
     }, undefined, (error) => {
       console.error('Errore nel caricamento del file .glb:', error);
     });
 
-    // 7. Funzioni di Modifica Proprietà (Agiscono sui parametri nativi senza sovrapposizioni)
-    function impostaMarmo(mat) {
-      mat.color = new THREE.Color(0x141414); // Nero Marquinia
-      mat.roughness = 0.05;                  // Molto lucido / riflettente
-      mat.metalness = 0.1;
+    // 🛠️ FUNZIONE DI RESET COMPLETA: Pulisce le texture prima di applicare i cambi
+    function resetMateriale(mat) {
+      mat.map = null;             
+      mat.normalMap = null;       
+      mat.roughnessMap = null;    
+      mat.metalnessMap = null;    
+      mat.bumpMap = null;
       mat.transparent = false;
       mat.opacity = 1.0;
       if (mat.transmission !== undefined) mat.transmission = 0.0;
+    }
+
+    // 🪵 GENERATORE PROCEDURALE DEL LEGNO (Genera le vene matematicamente in tempo reale)
+    function generaTextureLegno() {
+      const size = 512; 
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#4a3319'; // Sfondo Noce
+      ctx.fillRect(0, 0, size, size);
+
+      ctx.lineWidth = 1.5;
+      for (let i = -size; i < size * 2; i += 6) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(40, 24, 8, ${0.15 + Math.random() * 0.25})`; // Colore venature scure
+        
+        for (let y = 0; y <= size; y += 4) {
+          const wave1 = Math.sin(y * 0.02) * 15;
+          const wave2 = Math.cos(y * 0.005) * 25;
+          const x = i + wave1 + wave2 + (y * 0.2); 
+          
+          if (y === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(1, 3); // Allunga le vene sul lato lungo
+      return texture;
+    }
+
+    // 7. Funzioni di Modifica Proprietà per le 3 Finiture
+    function impostaMarmo(mat) {
+      resetMateriale(mat);        
+      mat.color = new THREE.Color(0x141414); // Nero Marquinia scuro
+      mat.roughness = 0.05;                  // Lucido a specchio
+      mat.metalness = 0.1;
       mat.needsUpdate = true;
     }
 
     function impostaNoce(mat) {
-      mat.color = new THREE.Color(0x4a3319); // Marrone noce canaletto
-      mat.roughness = 0.6;                  // Opaco, tipico del legno trattato
+      resetMateriale(mat);        
+      const textureLegno = generaTextureLegno();
+      mat.map = textureLegno;
+      mat.bumpMap = textureLegno;            // Assegna il rilievo tattile alle vene
+      mat.bumpScale = 0.015;
+      mat.color = new THREE.Color(0xffffff); // Bianco neutro per non alterare la texture
+      mat.roughness = 0.55;                  // Finitura satinata/opaca
       mat.metalness = 0.0;
-      mat.transparent = false;
-      mat.opacity = 1.0;
-      if (mat.transmission !== undefined) mat.transmission = 0.0;
       mat.needsUpdate = true;
     }
 
     function impostaVetro(mat) {
-      mat.color = new THREE.Color(0x2c3539); // Grigio scuro fumé
-      mat.roughness = 0.1;                  // Superficie vitrea liscia
+      resetMateriale(mat);        
+      mat.color = new THREE.Color(0x2c3539); // Grigio fumo
+      mat.roughness = 0.05;                 // Perfettamente liscio
       mat.metalness = 0.1;
       mat.transparent = true;
-      mat.opacity = 0.4;                    // Trasparenza al 40%
+      mat.opacity = 0.3;                    // Trasparenza visiva
       if (mat.transmission !== undefined) {
-        mat.transmission = 0.9;             // Sfrutta il canale di trasmissione fisica di Three.js se disponibile
+        mat.transmission = 0.95;            // Canale di rifrazione fisica del vetro reale
       }
       mat.needsUpdate = true;
     }
 
-    // 8. Assegnazione Eventi ai Pulsanti del Menu
+    // 8. Eventi Pulsanti Menu
     document.getElementById('btn-marmo').addEventListener('click', () => {
       if (materialeTop) {
         impostaMarmo(materialeTop);
-        console.log('Cambio finitura: Marmo Marquinia');
+        console.log('Finitura applicata: Marmo Marquinia');
       }
     });
 
     document.getElementById('btn-noce').addEventListener('click', () => {
       if (materialeTop) {
         impostaNoce(materialeTop);
-        console.log('Cambio finitura: Noce Canaletto');
+        console.log('Finitura applicata: Noce Canaletto con Venature');
       }
     });
 
     document.getElementById('btn-vetro').addEventListener('click', () => {
       if (materialeTop) {
         impostaVetro(materialeTop);
-        console.log('Cambio finitura: Vetro Fumé');
+        console.log('Finitura applicata: Vetro Fumé');
       }
     });
 
-    // 9. Loop di Rendering dell'Animazione
+    // 9. Loop di Rendering
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -211,7 +235,7 @@
     }
     animate();
 
-    // 10. Gestione Ridimensionamento Finestra Browser
+    // 10. Gestione Finestra Browser
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
