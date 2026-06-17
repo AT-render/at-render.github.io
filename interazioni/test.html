@@ -60,20 +60,19 @@
   </div>
 
   <script type="module">
-    // Grazie all'importmap, questi import puntano a librerie coordinate tra loro della stessa versione
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    // 1. Configurazione Scena
+    // 1. Scena
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a1a);
 
-    // 2. Configurazione Camera
+    // 2. Camera
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(2, 2, 3); 
 
-    // 3. Configurazione Renderer
+    // 3. Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -81,7 +80,7 @@
     renderer.toneMappingExposure = 1.2;
     document.body.appendChild(renderer.domElement);
 
-    // 4. Illuminazione da Studio
+    // 4. Illuminazione
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
     scene.add(hemiLight);
 
@@ -93,7 +92,7 @@
     dirLight2.position.set(-5, 5, -5);
     scene.add(dirLight2);
 
-    // 5. Controlli OrbitControls
+    // 5. Controlli
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -101,66 +100,82 @@
 
     let tavoloModello = null;
 
-    // 6. Caricamento Modello .glb (./ si riferisce a dentro la cartella 'interazioni/')
+    // Definiamo i tre materiali standard in modo pulito
+    const matMarmo = new THREE.MeshStandardMaterial({
+      color: 0x141414,
+      roughness: 0.05,
+      metalness: 0.1
+    });
+
+    const matNoce = new THREE.MeshStandardMaterial({
+      color: 0x4a3319,
+      roughness: 0.5,
+      metalness: 0.0
+    });
+
+    const matVetro = new THREE.MeshStandardMaterial({
+      color: 0x2c3539,
+      roughness: 0.1,
+      transparent: true,
+      opacity: 0.5,
+      metalness: 0.1
+    });
+
+    // 6. Caricamento Modello .glb
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
       tavoloModello = gltf.scene;
-      
-      // ✅ CORREZIONE SCALA DI BLENDER:
-      // Poiché Blender esporta il nodo radice "Assieme definitivo Lemans.Rhino" a 0.01, lo forziamo a 1,1,1
       tavoloModello.scale.set(1, 1, 1); 
-      
       scene.add(tavoloModello);
-      console.log('Modello 3D caricato con successo!');
+      
+      console.log('Modello caricato! Configuro il materiale iniziale...');
+
+      // Al caricamento, cerchiamo il piano e gli diamo il Marmo come predefinito
+      tavoloModello.traverse((child) => {
+        if (child.isMesh && child.name.includes('Piano.Botte')) {
+          child.material = matMarmo;
+        }
+      });
+      
     }, undefined, (error) => {
       console.error('Errore nel caricamento del modello:', error);
     });
 
-    // 7. Gestione Pulsanti Materiali
+    // 7. Gestione Pulsanti (Sostituiscono completamente il materiale applicato alla mesh senza accumularli)
     document.getElementById('btn-marmo').addEventListener('click', () => {
       if (!tavoloModello) return;
       tavoloModello.traverse((child) => {
         if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0x141414,
-            roughness: 0.05,
-            metalness: 0.1
-          });
+          child.material = matMarmo;
+          child.material.needsUpdate = true;
         }
       });
-      console.log('Finitura applicata: Marmo Marquinia');
+      console.log('Finitura attiva: Marmo Marquinia');
     });
 
     document.getElementById('btn-noce').addEventListener('click', () => {
       if (!tavoloModello) return;
       tavoloModello.traverse((child) => {
         if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0x4a3319,
-            roughness: 0.5,
-            metalness: 0.0
-          });
+          child.material = matNoce;
+          child.material.needsUpdate = true;
         }
       });
-      console.log('Finitura applicata: Noce Canaletto');
+      console.log('Finitura attiva: Noce Canaletto');
     });
 
     document.getElementById('btn-vetro').addEventListener('click', () => {
       if (!tavoloModello) return;
       tavoloModello.traverse((child) => {
         if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0x2c3539,
-            roughness: 0.1,
-            transparent: true,
-            opacity: 0.5
-          });
+          child.material = matVetro;
+          child.material.needsUpdate = true;
         }
       });
-      console.log('Finitura applicata: Vetro Fumé');
+      console.log('Finitura attiva: Vetro Fumé');
     });
 
-    // 8. Rendering Loop
+    // 8. Loop di animazione
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -168,7 +183,7 @@
     }
     animate();
 
-    // 9. Ridimensionamento finestra browser
+    // 9. Ridimensionamento finestra
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
