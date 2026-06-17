@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizzazione modello 3D | AT‑render</title>
+  
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #1a1a1a;
+      font-family: sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    #menu {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="menu">
+    <button id="btn-marmo">Top Marmo Marquinia</button>
+    <button id="btn-noce">Top Noce Originale Blender</button>
+    <button id="btn-vetro">Top Vetro Fumé</button>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // 1. Configurazione Scena
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x9c9c9c);
+
+    // 2. Configurazione Camera
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(2, 2, 3); 
+
+    // 3. Configurazione Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    document.body.appendChild(renderer.domElement);
+
+    // 4. Illuminazione da Studio
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+    scene.add(hemiLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight1.position.set(5, 10, 7.5);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight2.position.set(-5, 5, -5);
+    scene.add(dirLight2);
+
+    // 5. Controlli OrbitControls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.target.set(0, 0.5, 0); 
+
+    let meshTop = null;                     // Riferimento alla Mesh geometrica del top
+    let materialeOriginaleBlender = null;   // Backup protetto dell'intero materiale di Blender
+    let materialeAlternativo = null;        // Istanza per le modifiche (Vetro/Marmo)
+
+    // 6. Caricamento Modello .glb
+    const loader = new GLTFLoader();
+    loader.load('./Lemans.tavolo.glb', (gltf) => {
+      const tavoloModello = gltf.scene;
+      tavoloModello.scale.set(1, 1, 1); 
+      scene.add(tavoloModello);
+      
+      tavoloModello.traverse((child) => {
+        if (child.isMesh) {
+          // Identifichiamo la parte del tavolo che ha il materiale del top
+          if (child.material && child.material.name === 'Top_MAT') {
+            meshTop = child;
+            // Salva l'esatto materiale nativo così come è stato importato (comprese le texture di Blender)
+            materialeOriginaleBlender = child.material;
+            
+            // Creiamo un materiale separato clonato per i pulsanti Marmo/Vetro per non contaminare l'originale
+            materialeAlternativo = child.material.clone();
+          }
+        }
+      });
+
+      if (meshTop) {
+        console.log(`✅ Successo: Il modello mostra il materiale nativo di Blender ("Top_MAT")`);
+      }
+
+    }, undefined, (error) => {
+      console.error('Errore nel caricamento del file .glb:', error);
+    });
+
+    // Funzione interna per pulire le mappe sul materiale modificabile senza toccare l'originale
+    function resetMappe(mat) {
+      mat.map = null;             
+      mat.normalMap = null;       
+      mat.roughnessMap = null;    
+      mat.metalnessMap = null;    
+      mat.bumpMap = null;
+      mat.transparent = false;
+      mat.opacity = 1.0;
+      if (mat.transmission !== undefined) mat.transmission = 0.0;
+    }
+
+    // 7. Funzioni di Modifica Proprietà per le Finiture Alternative
+    function applicaMarmo() {
+      if (!meshTop || !materialeAlternativo) return;
+      
+      resetMappe(materialeAlternativo);
+      materialeAlternativo.color = new THREE.Color(0xfcfcfc); 
+      materialeAlternativo.roughness = 0.05; // Lucido
+      materialeAlternativo.metalness = 0.1;
+      materialeAlternativo.needsUpdate = true;
+      
+      // Assegna il materiale alternativo alla mesh
+      meshTop.material = materialeAlternativo;
+    }
+
+    function applicaVetro() {
+      if (!meshTop || !materialeAlternativo) return;
+      
+      resetMappe(materialeAlternativo);
+      materialeAlternativo.color = new THREE.Color(0x2c3539); // Grigio fumo
+      materialeAlternativo.roughness = 0.05;
+      materialeAlternativo.metalness = 0.1;
+      materialeAlternativo.transparent = true;
+      materialeAlternativo.opacity = 0.3;                    
+      if (materialeAlternativo.transmission !== undefined) {
+        materialeAlternativo.transmission = 0.95; // Rifrazione PBR
+      }
+      materialeAlternativo.needsUpdate = true;
+      
+      // Assegna il materiale alternativo alla mesh
+      meshTop.material = materialeAlternativo;
+    }
+
+    function applicaLegnoOriginale() {
+      if (!meshTop || !materialeOriginaleBlender) return;
+      
+      // Ripristina l'istanza PURA del materiale estratto dal file .glb senza alcuna modifica logica
+      meshTop.material = materialeOriginaleBlender;
+      meshTop.material.needsUpdate = true;
+    }
+
+    // 8. Eventi Pulsanti Menu
+    document.getElementById('btn-marmo').addEventListener('click', () => {
+      applicaMarmo();
+      console.log('Finitura applicata: Marmo');
+    });
+
+    document.getElementById('btn-noce').addEventListener('click', () => {
+      applicaLegnoOriginale();
+      console.log('Finitura applicata: Legno originale da Blender (Inalterato)');
+    });
+
+    document.getElementById('btn-vetro').addEventListener('click', () => {
+      applicaVetro();
+      console.log('Finitura applicata: Vetro Fumé');
+    });
+
+    // 9. Loop di Rendering
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // 10. Gestione Finestra Browser
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+
+</body>
+</html>
