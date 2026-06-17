@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76QLWCN9VF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-76QLWCN9VF');
+    </script>
+    
+    <!-- per ottimizzazione SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "AT-render",
+      "description": "Modellazione 3D coerente, rendering fotorealistici, animazioni e realtà aumentata per architetti e aziende dell’arredo.",
+      "image": "https://www.at-render.com/img/AT_logo.squared.alpha.TOP.web.png",
+      "url": "https://www.at-render.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IT",
+        "addressRegion": "Friuli Venezia Giulia"
+      },
+      "areaServed": "Italia",
+      "serviceType": [
+        "Rendering fotorealistici",
+        "Modellazione 3D",
+        "Animazioni 3D",
+        "Realtà aumentata"
+      ]
+    }
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzazione modello 3D | AT‑render</title>
+    
+    <!-- Percorsi corretti con ../ perché ci troviamo nella cartella "interazioni" -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    
+    <style>
+      /* Layout per far convivere l'header di index.html con il canvas */
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background-color: #1a1a1a;
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Forza l'header di index.html a integrarsi correttamente */
+      .site-header {
+        flex-shrink: 0;
+        z-index: 1000;
+        position: relative;
+        background-color: #ffffff; /* Sostituisci o adatta in base al tema di style.css */
+      }
+
+      /* Il wrapper del canvas prende tutto lo spazio rimanente sotto l'header */
+      #canvas-container {
+        flex-grow: 1;
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      canvas {
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* Menu di controllo ancorato sopra il fondo del canvas */
+      #menu {
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(0, 0, 0, 0.85);
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      }
+
+      .picker-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+        font-size: 14px;
+        border-left: 1px solid #555;
+        padding-left: 15px;
+      }
+
+      input[type="color"] {
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        background: none;
+      }
+
+      input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+
+      input[type="color"]::-webkit-color-swatch {
+        border: 2px solid #fff;
+        border-radius: 50%;
+      }
+
+      #menu button {
+        background-color: #333;
+        color: white;
+        border: 1px solid #555;
+        padding: 8px 16px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      #menu button:hover {
+        background-color: #555;
+      }
+    </style>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+
+    <!-- HEADER ESTRATTO DA index.html (con i link corretti per tornare alla root) -->
+    <header class="site-header">
+        <a href="../#top" class="logo">
+            <img src="../img/AT_logo.squared.alpha.TOP.web.png" alt="AT-render Logo">
+            <div class="logo-text">
+                <h1>AT-render</h1>
+                <p>Modellazione 3D Coerente</p>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <ul>
+                <li><a href="../#servizi">Servizi</a></li>
+                <li><a href="../#portfolio">Portfolio</a></li>
+                <li><a href="../#processo">Processo</a></li>
+                <li><a href="../#about">Chi sono</a></li>
+                <li><a href="../#contatti" class="cta-nav">Contatti</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenitore per l'area 3D e la relativa UI overlay -->
+    <div id="canvas-container">
+        <div id="menu">
+          <button id="btn-marmo">Top Marmo</button>
+          <button id="btn-noce">Top Legno</button>
+          <button id="btn-vetro">Top Vetro Fumè</button>
+          
+          <div class="picker-container">
+            <label for="color-gambe">Colore Gamba:</label>
+            <input type="color" id="color-gambe" value="#ffffff">
+          </div>
+        </div>
+    </div>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      const container = document.getElementById('canvas-container');
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x9c9c9c);
+
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(2, 2, 3); 
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      container.appendChild(renderer.domElement);
+
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+      scene.add(hemiLight);
+
+      const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+      dirLight1.position.set(5, 10, 7.5);
+      scene.add(dirLight1);
+
+      const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+      dirLight2.position.set(-5, 5, -5);
+      scene.add(dirLight2);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.target.set(0, 0.5, 0); 
+
+      let meshTop = null;
+      let materialeGambe = null;
+      const materialiBlender = {};
+
+      const loader = new GLTFLoader();
+      // Il file .glb si trova nella stessa cartella della pagina interazioni, o nella root? 
+      // Se si trova nella root usa '../Lemans.tavolo.glb'
+      loader.load('./Lemans.tavolo.glb', (gltf) => {
+        const tavoloModello = gltf.scene;
+        tavoloModello.scale.set(1, 1, 1); 
+        scene.add(tavoloModello);
+        
+        if (gltf.parser && gltf.parser.json && gltf.parser.json.materials) {
+          gltf.parser.json.materials.forEach((matInfo, index) => {
+            if (matInfo.name === 'Top_MAT.001' || matInfo.name === 'Top_MAT.002' || matInfo.name === 'Top_MAT.003') {
+              gltf.parser.getDependency('material', index).then((materialePronto) => {
+                materialiBlender[matInfo.name] = materialePronto;
+              });
+            }
+          });
+        }
+
+        tavoloModello.traverse((child) => {
+          if (child.isMesh && child.material) {
+            if (child.material.name === 'Top_MAT.001' || child.material.name === 'Top_MAT') {
+              meshTop = child;
+              materialiBlender['Top_MAT.001'] = child.material;
+            }
+            
+            if (child.material.name === 'Leg_MAT') {
+              materialeGambe = child.material;
+              const coloreIniziale = '#' + materialeGambe.color.getHexString();
+              document.getElementById('color-gambe').value = coloreIniziale;
+            }
+          }
+        });
+
+      }, undefined, (error) => {
+        console.error('Errore nel caricamento del file .glb:', error);
+      });
+
+      function applicaMaterialeNativo(nomeMateriale) {
+        if (!meshTop) return;
+        const materialeScelto = materialiBlender[nomeMateriale];
+        if (materialeScelto) {
+          meshTop.material = materialeScelto;
+          meshTop.material.needsUpdate = true;
+        }
+      }
+
+      document.getElementById('btn-marmo').addEventListener('click', () => {
+        applicaMaterialeNativo('Top_MAT.001');
+      });
+
+      document.getElementById('btn-noce').addEventListener('click', () => {
+        applicaMaterialeNativo('Top_MAT.002');
+      });
+
+      document.getElementById('btn-vetro').addEventListener('click', () => {
+        applicaMaterialeNativo('Top_MAT.003');
+      });
+
+      document.getElementById('color-gambe').addEventListener('input', (event) => {
+        if (materialeGambe) {
+          materialeGambe.color.set(event.target.value);
+        }
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+    </script>
+</body>
+</html>
