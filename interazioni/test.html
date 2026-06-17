@@ -9,40 +9,67 @@
       margin: 0;
       overflow: hidden;
       background-color: #111;
+      font-family: sans-serif;
     }
     canvas {
       display: block;
     }
+    /* Stile per il contenitore dei pulsanti in alto */
+    #menu {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #555;
+    }
   </style>
 </head>
 <body>
+
+  <div id="menu">
+    <button id="btn-marmo">Top Marmo Marquinia</button>
+    <button id="btn-noce">Top Noce Canaletto</button>
+    <button id="btn-vetro">Top Vetro Fumé</button>
+  </div>
 
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164/build/three.module.js';
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.164/examples/jsm/loaders/GLTFLoader.js';
     import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.164/examples/jsm/controls/OrbitControls.js';
 
-    // 1. Creazione della Scena
+    // 1. Scena
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x111111);
 
-    // 2. Creazione della Camera
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      100
-    );
-    // Posizioniamo la camera leggermente distante e in alto per vedere bene il tavolo
+    // 2. Camera
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(3, 3, 5);
 
-    // 3. Creazione del Renderer (Motore Grafico)
+    // 3. Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(renderer.domElement);
 
-    // 4. Illuminazione della scena
+    // 4. Luci
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
     scene.add(hemiLight);
 
@@ -50,37 +77,51 @@
     dirLight.position.set(5, 10, 7.5);
     scene.add(dirLight);
 
-    // 5. Controlli del Mouse (OrbitControls)
+    // 5. Controlli Orbitabili
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // Rende il movimento più fluido ed elastico
+    controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.target.set(0, 0, 0); // Punta il centro della scena
+    controls.target.set(0, 0, 0);
 
-    // 6. Caricamento del Modello 3D (.glb)
-    // NOTA: 'Lemans.tavolo.glb' ha la 't' minuscola come sul tuo repository GitHub
+    // Variabile per memorizzare il modello e poter cambiare i materiali in seguito
+    let tavoloModello = null;
+
+    // 6. Caricamento Modello GLB (Nome corretto con la 't' minuscola)
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
-      scene.add(gltf.scene);
+      tavoloModello = gltf.scene;
+      scene.add(tavoloModello);
       console.log('Modello caricato con successo!');
     }, undefined, (error) => {
       console.error('Errore nel caricamento del modello:', error);
     });
 
-    // 7. Ciclo di Animazione Continuo (Mancava nel vecchio file)
+    // 7. Logica dei Pulsanti (Esempio base di cambio colore/finitura)
+    // Nota: in futuro qui dentro potrai cambiare i materiali specifici del mesh del tuo tavolo
+    document.getElementById('btn-marmo').addEventListener('click', () => {
+      console.log('Finitura selezionata: Marmo Marquinia');
+      // Qui andrà il codice per cambiare il materiale del top in marmo
+    });
+
+    document.getElementById('btn-noce').addEventListener('click', () => {
+      console.log('Finitura selezionata: Noce Canaletto');
+      // Qui andrà il codice per cambiare il materiale del top in legno
+    });
+
+    document.getElementById('btn-vetro').addEventListener('click', () => {
+      console.log('Finitura selezionata: Vetro Fumé');
+      // Qui andrà il codice per cambiare il materiale del top in vetro
+    });
+
+    // 8. Loop di Animazione
     function animate() {
       requestAnimationFrame(animate);
-
-      // Aggiorna l'inerzia dei controlli del mouse
       controls.update();
-
-      // Disegna la scena dal punto di vista della camera
       renderer.render(scene, camera);
     }
-
-    // Avvia l'animazione per la prima volta
     animate();
 
-    // 8. Gestione del ridimensionamento della finestra del browser
+    // 9. Gestione Ridimensionamento Finestra
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
