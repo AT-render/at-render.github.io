@@ -8,8 +8,8 @@
   <script type="importmap">
     {
       "imports": {
-        "three": "../js/three.js",
-        "three/addons/": "../js/"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
       }
     }
   </script>
@@ -60,10 +60,10 @@
   </div>
 
   <script type="module">
-    // Ora il browser risolve questi import localmente grazie alla mappa sopra!
+    // Grazie all'importmap, questi import puntano a librerie coordinate tra loro della stessa versione
     import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/GLTFLoader.js';
-    import { OrbitControls } from 'three/addons/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     // 1. Configurazione Scena
     const scene = new THREE.Scene();
@@ -81,7 +81,7 @@
     renderer.toneMappingExposure = 1.2;
     document.body.appendChild(renderer.domElement);
 
-    // 4. Illuminazione della scena
+    // 4. Illuminazione da Studio
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
     scene.add(hemiLight);
 
@@ -93,7 +93,7 @@
     dirLight2.position.set(-5, 5, -5);
     scene.add(dirLight2);
 
-    // 5. Controlli mouse
+    // 5. Controlli OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -101,12 +101,13 @@
 
     let tavoloModello = null;
 
-    // 6. Caricamento Modello .glb (Si trova nella stessa cartella 'interazioni' di questo file)
+    // 6. Caricamento Modello .glb (./ si riferisce a dentro la cartella 'interazioni/')
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
       tavoloModello = gltf.scene;
       
-      // Correzione scala metrica (ignora lo 0.01 di Blender sul nodo radice)
+      // ✅ CORREZIONE SCALA DI BLENDER:
+      // Poiché Blender esporta il nodo radice "Assieme definitivo Lemans.Rhino" a 0.01, lo forziamo a 1,1,1
       tavoloModello.scale.set(1, 1, 1); 
       
       scene.add(tavoloModello);
@@ -115,7 +116,7 @@
       console.error('Errore nel caricamento del modello:', error);
     });
 
-    // 7. Collegamento pulsanti texturing
+    // 7. Gestione Pulsanti Materiali
     document.getElementById('btn-marmo').addEventListener('click', () => {
       if (!tavoloModello) return;
       tavoloModello.traverse((child) => {
@@ -127,6 +128,7 @@
           });
         }
       });
+      console.log('Finitura applicata: Marmo Marquinia');
     });
 
     document.getElementById('btn-noce').addEventListener('click', () => {
@@ -140,6 +142,7 @@
           });
         }
       });
+      console.log('Finitura applicata: Noce Canaletto');
     });
 
     document.getElementById('btn-vetro').addEventListener('click', () => {
@@ -154,9 +157,10 @@
           });
         }
       });
+      console.log('Finitura applicata: Vetro Fumé');
     });
 
-    // 8. Loop di rendering continuo
+    // 8. Rendering Loop
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
