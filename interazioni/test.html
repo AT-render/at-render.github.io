@@ -54,9 +54,9 @@
 <body>
 
   <div id="menu">
-    <button id="btn-marmo">Top Marmo Marquinia</button>
-    <button id="btn-noce">Top Noce Canaletto (Blender)</button>
-    <button id="btn-vetro">Top Vetro Fumé</button>
+    <button id="btn-mat1">Materiale 001</button>
+    <button id="btn-mat2">Materiale 002</button>
+    <button id="btn-mat3">Materiale 003</button>
   </div>
 
   <script type="module">
@@ -98,119 +98,75 @@
     controls.dampingFactor = 0.05;
     controls.target.set(0, 0.5, 0); 
 
-    let tavoloModello = null;
-    let materialeTop = null; 
-    let materialeOriginaleBlender = null; // 🌟 Memoria per salvare il materiale nativo
+    // Variabili per tracciare la mesh del top e archiviare i materiali di Blender
+    let meshTop = null;
+    const materialiBlender = {
+      'Top_MAT.001': null,
+      'Top_MAT.002': null,
+      'Top_MAT.003': null
+    };
 
     // 6. Caricamento Modello .glb
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
-      tavoloModello = gltf.scene;
+      const tavoloModello = gltf.scene;
       tavoloModello.scale.set(1, 1, 1); 
       scene.add(tavoloModello);
       
+      // Primo passaggio: cerchiamo e archiviamo tutti i materiali presenti nel file del modello
       tavoloModello.traverse((child) => {
-        if (child.isMesh) {
-          if (child.material && child.material.name === 'Top_MAT') {
-            materialeTop = child.material;
-            // 🌟 Clona e conserva il materiale originale configurato in Blender
-            materialeOriginaleBlender = child.material.clone();
+        if (child.isMesh && child.material) {
+          const nomeMat = child.material.name;
+          
+          // Se il nome corrisponde a uno dei tre che stiamo cercando, lo salviamo nel nostro archivio
+          if (nomeMat === 'Top_MAT.001' || nomeMat === 'Top_MAT.002' || nomeMat === 'Top_MAT.003') {
+            materialiBlender[nomeMat] = child.material;
+          }
+
+          // Identifichiamo l'elemento geometrico del Top (quello che inizialmente ha il materiale 001)
+          if (nomeMat === 'Top_MAT.001') {
+            meshTop = child;
           }
         }
       });
 
-      if (materialeTop) {
-        console.log(`✅ Successo: Modello caricato con il materiale di default di Blender ("Top_MAT")`);
-        // NOTA: Non chiamiamo più funzioni di override qui. Il modello mostra nativamente i suoi settaggi.
-      }
-
+      console.log("✅ Materiali mappati dal file originale:", materialiBlender);
     }, undefined, (error) => {
       console.error('Errore nel caricamento del file .glb:', error);
     });
 
-    // 🛠️ FUNZIONE DI RESET COMPLETA: Pulisce le texture prima di applicare i cambi procedurali
-    function resetMateriale(mat) {
-      mat.map = null;             
-      mat.normalMap = null;       
-      mat.roughnessMap = null;    
-      mat.metalnessMap = null;    
-      mat.bumpMap = null;
-      mat.transparent = false;
-      mat.opacity = 1.0;
-      if (mat.transmission !== undefined) mat.transmission = 0.0;
-    }
-
-    // 🔄 FUNZIONE DI RIPRISTINO: Copia i parametri nativi esportati da Blender
-    function ripristinaMaterialeOriginale(matTarget) {
-      if (!materialeOriginaleBlender) return;
-
-      // Ripristina tutte le mappe e i colori nativi del file .blend
-      matTarget.map = materialeOriginaleBlender.map;
-      matTarget.normalMap = materialeOriginaleBlender.normalMap;
-      matTarget.roughnessMap = materialeOriginaleBlender.roughnessMap;
-      matTarget.metalnessMap = materialeOriginaleBlender.metalnessMap;
-      matTarget.bumpMap = materialeOriginaleBlender.bumpMap;
-      
-      matTarget.color.copy(materialeOriginaleBlender.color);
-      matTarget.roughness = materialeOriginaleBlender.roughness;
-      matTarget.metalness = materialeOriginaleBlender.metalness;
-      matTarget.bumpScale = materialeOriginaleBlender.bumpScale;
-      
-      matTarget.transparent = materialeOriginaleBlender.transparent;
-      matTarget.opacity = materialeOriginaleBlender.opacity;
-      
-      if (materialeOriginaleBlender.transmission !== undefined) {
-        matTarget.transmission = materialeOriginaleBlender.transmission;
+    // Funzione centralizzata per cambiare materiale alla mesh recuperandolo dall'archivio nativo
+    function cambiaMaterialeTop(nomeMateriale) {
+      if (!meshTop) {
+        console.warn("Mesh del top non ancora caricata o trovata.");
+        return;
       }
       
-      matTarget.needsUpdate = true;
-    }
-
-    // 7. Funzioni di Modifica Proprietà per le Finiture Alternative
-    function impostaMarmo(mat) {
-      resetMateriale(mat);        
-      mat.color = new THREE.Color(0xfcfcfc); 
-      mat.roughness = 0.05;                  // Lucido a specchio
-      mat.metalness = 0.1;
-      mat.needsUpdate = true;
-    }
-
-    function impostaVetro(mat) {
-      resetMateriale(mat);        
-      mat.color = new THREE.Color(0x2c3539);   // Grigio fumo
-      mat.roughness = 0.05;                    // Vetro liscio
-      mat.metalness = 0.1;
-      mat.transparent = true;
-      mat.opacity = 0.3;                    
-      if (mat.transmission !== undefined) {
-        mat.transmission = 0.95;               // Attiva la rifrazione fisica PBR
+      const materialeScelto = materialiBlender[nomeMateriale];
+      
+      if (materialeScelto) {
+        meshTop.material = materialeScelto;
+        meshTop.material.needsUpdate = true;
+        console.log(`Applicato materiale nativo: ${nomeMateriale}`);
+      } else {
+        console.error(`Errore: Il materiale ${nomeMateriale} non è stato trovato dentro il file .glb`);
       }
-      mat.needsUpdate = true;
     }
 
-    // 8. Eventi Pulsanti Menu
-    document.getElementById('btn-marmo').addEventListener('click', () => {
-      if (materialeTop) {
-        impostaMarmo(materialeTop);
-        console.log('Finitura applicata: Marmo Marquinia');
-      }
+    // 7. Eventi Pulsanti Menu
+    document.getElementById('btn-mat1').addEventListener('click', () => {
+      cambiaMaterialeTop('Top_MAT.001');
     });
 
-    document.getElementById('btn-noce').addEventListener('click', () => {
-      if (materialeTop) {
-        ripristinaMaterialeOriginale(materialeTop);
-        console.log('Finitura applicata: Ripristinato legno nativo da Blender');
-      }
+    document.getElementById('btn-mat2').addEventListener('click', () => {
+      cambiaMaterialeTop('Top_MAT.002');
     });
 
-    document.getElementById('btn-vetro').addEventListener('click', () => {
-      if (materialeTop) {
-        impostaVetro(materialeTop);
-        console.log('Finitura applicata: Vetro Fumé');
-      }
+    document.getElementById('btn-mat3').addEventListener('click', () => {
+      cambiaMaterialeTop('Top_MAT.003');
     });
 
-    // 9. Loop di Rendering
+    // 8. Loop di Rendering
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -218,7 +174,7 @@
     }
     animate();
 
-    // 10. Gestione Finestra Browser
+    // 9. Gestione Finestra Browser
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
