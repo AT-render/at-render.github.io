@@ -64,15 +64,15 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    // Scena
+    // 1. Configurazione Scena
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a1a);
 
-    // Camera
+    // 2. Configurazione Camera
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(2, 2, 3); 
 
-    // Renderer
+    // 3. Configurazione Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -80,7 +80,7 @@
     renderer.toneMappingExposure = 1.2;
     document.body.appendChild(renderer.domElement);
 
-    // Luci
+    // 4. Illuminazione da Studio
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
     scene.add(hemiLight);
 
@@ -92,55 +92,66 @@
     dirLight2.position.set(-5, 5, -5);
     scene.add(dirLight2);
 
-    // Controlli
+    // 5. Controlli OrbitControls (Rotazione e Zoom)
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.target.set(0, 0.5, 0); 
 
     let tavoloModello = null;
-    let materialeTop = null; // Salverà il riferimento a top_MAT
+    let materialeTop = null;  // Conterrà il riferimento a top_MAT
+    let materialeGamba = null; // Conterrà il riferimento a Leg_MAT (se ti servirà in futuro)
 
-    // Loader GLTF
+    // 6. Caricamento Modello .glb con Ispezione Diagnostica dei Materiali
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
       tavoloModello = gltf.scene;
+      
+      // Correzione scala radice di Blender (da 0.01 a 1 metro reale)
       tavoloModello.scale.set(1, 1, 1); 
       scene.add(tavoloModello);
       
-      // Cerchiamo i materiali scorrendo le mesh del modello
+      console.log('--- ISPEZIONE STRUTTURA MATERIALI ---');
+
       tavoloModello.traverse((child) => {
         if (child.isMesh) {
-          // Se l'oggetto ha più materiali (array), cerchiamo dentro l'array
+          console.log(`Mesh rilevata: "${child.name}"`);
+          
+          // Caso A: La mesh ha un array di materiali (Multi-Material)
           if (Array.isArray(child.material)) {
-            child.material.forEach((mat) => {
-              if (mat.name === 'top_MAT') materialeTop = mat;
+            child.material.forEach((mat, index) => {
+              console.log(`  -> Slot [${index}]: "${mat.name}"`);
+              if (mat.name.toLowerCase().includes('top')) materialeTop = mat;
+              if (mat.name.toLowerCase().includes('leg')) materialeGamba = mat;
             });
-          } else {
-            // Se l'oggetto ha un singolo materiale associato
-            if (child.material && child.material.name === 'top_MAT') {
-              materialeTop = child.material;
-            }
+          } 
+          // Caso B: La mesh ha un singolo materiale associato
+          else if (child.material) {
+            console.log(`  -> Materiale singolo: "${child.material.name}"`);
+            if (child.material.name.toLowerCase().includes('top')) materialeTop = child.material;
+            if (child.material.name.toLowerCase().includes('leg')) materialeGamba = child.material;
           }
         }
       });
 
+      console.log('--------------------------------------');
+
+      // Se abbiamo intercettato il materiale del top, applichiamo il marmo come default iniziale
       if (materialeTop) {
-        console.log("Materiale 'top_MAT' agganciato con successo!");
-        // Impostiamo il Marmo come look iniziale
+        console.log(`✅ Successo: Agganciato materiale del top ("${materialeTop.name}")`);
         impostaMarmo(materialeTop);
       } else {
-        console.warn("Attenzione: non ho trovato nessun materiale chiamato 'top_MAT'.");
+        console.warn("❌ Errore: Nessun materiale nel file GLB contiene la parola 'top' nel nome.");
       }
 
     }, undefined, (error) => {
-      console.error('Errore nel caricamento del modello:', error);
+      console.error('Errore nel caricamento del file .glb:', error);
     });
 
-    // Funzioni di modifica dirette (puliscono le vecchie proprietà per evitare sovrapposizioni visive)
+    // 7. Funzioni di Modifica Proprietà (Agiscono sui parametri nativi senza sovrapposizioni)
     function impostaMarmo(mat) {
-      mat.color = new THREE.Color(0x141414); // Corretto uso di THREE.Color
-      mat.roughness = 0.05;
+      mat.color = new THREE.Color(0x141414); // Nero Marquinia
+      mat.roughness = 0.05;                  // Molto lucido / riflettente
       mat.metalness = 0.1;
       mat.transparent = false;
       mat.opacity = 1.0;
@@ -149,8 +160,8 @@
     }
 
     function impostaNoce(mat) {
-      mat.color = new THREE.Color(0x4a3319);
-      mat.roughness = 0.6;
+      mat.color = new THREE.Color(0x4a3319); // Marrone noce canaletto
+      mat.roughness = 0.6;                  // Opaco, tipico del legno trattato
       mat.metalness = 0.0;
       mat.transparent = false;
       mat.opacity = 1.0;
@@ -159,31 +170,40 @@
     }
 
     function impostaVetro(mat) {
-      mat.color = new THREE.Color(0x2c3539);
-      mat.roughness = 0.1;
+      mat.color = new THREE.Color(0x2c3539); // Grigio scuro fumé
+      mat.roughness = 0.1;                  // Superficie vitrea liscia
       mat.metalness = 0.1;
       mat.transparent = true;
-      mat.opacity = 0.4; // Trasparenza
+      mat.opacity = 0.4;                    // Trasparenza al 40%
       if (mat.transmission !== undefined) {
-        mat.transmission = 0.9; // Se il materiale supporta il vetro fisico di Blender
+        mat.transmission = 0.9;             // Sfrutta il canale di trasmissione fisica di Three.js se disponibile
       }
       mat.needsUpdate = true;
     }
 
-    // Eventi pulsanti
+    // 8. Assegnazione Eventi ai Pulsanti del Menu
     document.getElementById('btn-marmo').addEventListener('click', () => {
-      if (materialeTop) impostaMarmo(materialeTop);
+      if (materialeTop) {
+        impostaMarmo(materialeTop);
+        console.log('Cambio finitura: Marmo Marquinia');
+      }
     });
 
     document.getElementById('btn-noce').addEventListener('click', () => {
-      if (materialeTop) impostaNoce(materialeTop);
+      if (materialeTop) {
+        impostaNoce(materialeTop);
+        console.log('Cambio finitura: Noce Canaletto');
+      }
     });
 
     document.getElementById('btn-vetro').addEventListener('click', () => {
-      if (materialeTop) impostaVetro(materialeTop);
+      if (materialeTop) {
+        impostaVetro(materialeTop);
+        console.log('Cambio finitura: Vetro Fumé');
+      }
     });
 
-    // Loop
+    // 9. Loop di Rendering dell'Animazione
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -191,7 +211,7 @@
     }
     animate();
 
-    // Resize
+    // 10. Gestione Ridimensionamento Finestra Browser
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
