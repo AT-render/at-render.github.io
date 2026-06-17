@@ -64,15 +64,15 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    // 1. Scena
+    // Scena
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a1a);
 
-    // 2. Camera
+    // Camera
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(2, 2, 3); 
 
-    // 3. Renderer
+    // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -80,7 +80,7 @@
     renderer.toneMappingExposure = 1.2;
     document.body.appendChild(renderer.domElement);
 
-    // 4. Illuminazione
+    // Luci
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
     scene.add(hemiLight);
 
@@ -92,90 +92,98 @@
     dirLight2.position.set(-5, 5, -5);
     scene.add(dirLight2);
 
-    // 5. Controlli
+    // Controlli
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.target.set(0, 0.5, 0); 
 
     let tavoloModello = null;
+    let materialeTop = null; // Salverà il riferimento a top_MAT
 
-    // Definiamo i tre materiali standard in modo pulito
-    const matMarmo = new THREE.MeshStandardMaterial({
-      color: 0x141414,
-      roughness: 0.05,
-      metalness: 0.1
-    });
-
-    const matNoce = new THREE.MeshStandardMaterial({
-      color: 0x4a3319,
-      roughness: 0.5,
-      metalness: 0.0
-    });
-
-    const matVetro = new THREE.MeshStandardMaterial({
-      color: 0x2c3539,
-      roughness: 0.1,
-      transparent: true,
-      opacity: 0.5,
-      metalness: 0.1
-    });
-
-    // 6. Caricamento Modello .glb
+    // Loader GLTF
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
       tavoloModello = gltf.scene;
       tavoloModello.scale.set(1, 1, 1); 
       scene.add(tavoloModello);
       
-      console.log('Modello caricato! Configuro il materiale iniziale...');
-
-      // Al caricamento, cerchiamo il piano e gli diamo il Marmo come predefinito
+      // Cerchiamo i materiali scorrendo le mesh del modello
       tavoloModello.traverse((child) => {
-        if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = matMarmo;
+        if (child.isMesh) {
+          // Se l'oggetto ha più materiali (array), cerchiamo dentro l'array
+          if (Array.isArray(child.material)) {
+            child.material.forEach((mat) => {
+              if (mat.name === 'top_MAT') materialeTop = mat;
+            });
+          } else {
+            // Se l'oggetto ha un singolo materiale associato
+            if (child.material && child.material.name === 'top_MAT') {
+              materialeTop = child.material;
+            }
+          }
         }
       });
-      
+
+      if (materialeTop) {
+        console.log("Materiale 'top_MAT' agganciato con successo!");
+        // Impostiamo il Marmo come look iniziale
+        impostaMarmo(materialeTop);
+      } else {
+        console.warn("Attenzione: non ho trovato nessun materiale chiamato 'top_MAT'.");
+      }
+
     }, undefined, (error) => {
       console.error('Errore nel caricamento del modello:', error);
     });
 
-    // 7. Gestione Pulsanti (Sostituiscono completamente il materiale applicato alla mesh senza accumularli)
+    // Funzioni di modifica dirette (puliscono le vecchie proprietà per evitare sovrapposizioni visive)
+    function impostaMarmo(mat) {
+      mat.color = new THREE.Color(0x141414); // Corretto uso di THREE.Color
+      mat.roughness = 0.05;
+      mat.metalness = 0.1;
+      mat.transparent = false;
+      mat.opacity = 1.0;
+      if (mat.transmission !== undefined) mat.transmission = 0.0;
+      mat.needsUpdate = true;
+    }
+
+    function impostaNoce(mat) {
+      mat.color = new THREE.Color(0x4a3319);
+      mat.roughness = 0.6;
+      mat.metalness = 0.0;
+      mat.transparent = false;
+      mat.opacity = 1.0;
+      if (mat.transmission !== undefined) mat.transmission = 0.0;
+      mat.needsUpdate = true;
+    }
+
+    function impostaVetro(mat) {
+      mat.color = new THREE.Color(0x2c3539);
+      mat.roughness = 0.1;
+      mat.metalness = 0.1;
+      mat.transparent = true;
+      mat.opacity = 0.4; // Trasparenza
+      if (mat.transmission !== undefined) {
+        mat.transmission = 0.9; // Se il materiale supporta il vetro fisico di Blender
+      }
+      mat.needsUpdate = true;
+    }
+
+    // Eventi pulsanti
     document.getElementById('btn-marmo').addEventListener('click', () => {
-      if (!tavoloModello) return;
-      tavoloModello.traverse((child) => {
-        if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = matMarmo;
-          child.material.needsUpdate = true;
-        }
-      });
-      console.log('Finitura attiva: Marmo Marquinia');
+      if (materialeTop) impostaMarmo(materialeTop);
     });
 
     document.getElementById('btn-noce').addEventListener('click', () => {
-      if (!tavoloModello) return;
-      tavoloModello.traverse((child) => {
-        if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = matNoce;
-          child.material.needsUpdate = true;
-        }
-      });
-      console.log('Finitura attiva: Noce Canaletto');
+      if (materialeTop) impostaNoce(materialeTop);
     });
 
     document.getElementById('btn-vetro').addEventListener('click', () => {
-      if (!tavoloModello) return;
-      tavoloModello.traverse((child) => {
-        if (child.isMesh && child.name.includes('Piano.Botte')) {
-          child.material = matVetro;
-          child.material.needsUpdate = true;
-        }
-      });
-      console.log('Finitura attiva: Vetro Fumé');
+      if (materialeTop) impostaVetro(materialeTop);
     });
 
-    // 8. Loop di animazione
+    // Loop
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -183,7 +191,7 @@
     }
     animate();
 
-    // 9. Ridimensionamento finestra
+    // Resize
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
