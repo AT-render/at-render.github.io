@@ -8,7 +8,8 @@
   <script type="importmap">
     {
       "imports": {
-        "three": "../js/three.module.js"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
       }
     }
   </script>
@@ -31,26 +32,22 @@
       z-index: 100;
       display: flex;
       gap: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
       border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
     button {
       background-color: #333;
       color: white;
       border: 1px solid #555;
-      padding: 10px 20px;
+      padding: 8px 16px;
       cursor: pointer;
       border-radius: 4px;
       font-size: 14px;
-      font-weight: bold;
-      transition: all 0.3s ease;
+      transition: background 0.3s;
     }
     button:hover {
-      background-color: #ffffff;
-      color: #1a1a1a;
-      border-color: #ffffff;
+      background-color: #555;
     }
   </style>
 </head>
@@ -64,47 +61,47 @@
 
   <script type="module">
     import * as THREE from 'three';
-    import { GLTFLoader } from '../js/GLTFLoader.js';
-    import { OrbitControls } from '../js/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     // 1. Configurazione Scena
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x222222);
+    scene.background = new THREE.Color(0x9c9c9c);
 
     // 2. Configurazione Camera
-    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(2, 2.5, 4); 
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(2, 2, 3); 
 
     // 3. Configurazione Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.4; 
+    renderer.toneMappingExposure = 1.2;
     document.body.appendChild(renderer.domElement);
 
-    // 4. Illuminazione da Studio potente
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2.0);
+    // 4. Illuminazione da Studio
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
     scene.add(hemiLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 2.5);
-    dirLight1.position.set(4, 8, 4);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight1.position.set(5, 10, 7.5);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0xabcdef, 1.5);
-    dirLight2.position.set(-4, 5, -4);
+    const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight2.position.set(-5, 5, -5);
     scene.add(dirLight2);
 
     // 5. Controlli OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.target.set(0, 0.3, 0); 
+    controls.target.set(0, 0.5, 0); 
 
     let tavoloModello = null;
     let materialeTop = null; 
 
-    // 6. Caricamento Modello .glb locale
+    // 6. Caricamento Modello .glb
     const loader = new GLTFLoader();
     loader.load('./Lemans.tavolo.glb', (gltf) => {
       tavoloModello = gltf.scene;
@@ -120,15 +117,15 @@
       });
 
       if (materialeTop) {
-        console.log(`✅ Agganciato materiale del top mappato: "${materialeTop.name}"`);
-        impostaVetro(materialeTop); // Default iniziale richiesto: Vetro Fumé
+        console.log(`✅ Successo: Agganciato materiale del top ("Top_MAT")`);
+        impostaVetro(materialeTop); // 🌟 Impostato come DEFAULT iniziale
       }
 
     }, undefined, (error) => {
       console.error('Errore nel caricamento del file .glb:', error);
     });
 
-    // 🛠️ RESET COMPLETO DEL MATERIALE (Standard)
+    // 🛠️ FUNZIONE DI RESET COMPLETA: Pulisce le texture prima di applicare i cambi
     function resetMateriale(mat) {
       mat.map = null;             
       mat.normalMap = null;       
@@ -137,34 +134,29 @@
       mat.bumpMap = null;
       mat.transparent = false;
       mat.opacity = 1.0;
-      mat.roughness = 0.1;
-      mat.metalness = 0.0;
       if (mat.transmission !== undefined) mat.transmission = 0.0;
     }
 
-    // 🪵 GENERATORE VENATURE LEGNO STANDARD (Sfrutta l'UV mapping di Blender)
+    // 🪵 GENERATORE PROCEDURALE DEL LEGNO (Genera le vene matematicamente in tempo reale)
     function generaTextureLegno() {
-      const size = 1024; 
+      const size = 512; 
       const canvas = document.createElement('canvas');
       canvas.width = size;
       canvas.height = size;
       const ctx = canvas.getContext('2d');
 
-      // Colore base Noce scuro e ricco
-      ctx.fillStyle = '#52331c';
+      ctx.fillStyle = '#4a3319'; // Sfondo Noce
       ctx.fillRect(0, 0, size, size);
 
-      // Disegno linee venature marcate ed evidenti
+      ctx.lineWidth = 1.5;
       for (let i = -size; i < size * 2; i += 6) {
         ctx.beginPath();
-        const opacita = 0.3 + Math.random() * 0.4;
-        ctx.strokeStyle = Math.random() > 0.4 ? `rgba(25, 12, 3, ${opacita})` : `rgba(115, 78, 48, ${opacita})`;
-        ctx.lineWidth = 1.5 + Math.random() * 3;
+        ctx.strokeStyle = `rgba(40, 24, 8, ${0.15 + Math.random() * 0.25})`; // Colore venature scure
         
         for (let y = 0; y <= size; y += 4) {
-          const wave1 = Math.sin(y * 0.02) * 30;
-          const wave2 = Math.cos(y * 0.004) * 45;
-          const x = i + wave1 + wave2 + (y * 0.1); 
+          const wave1 = Math.sin(y * 0.02) * 15;
+          const wave2 = Math.cos(y * 0.005) * 25;
+          const x = i + wave1 + wave2 + (y * 0.2); 
           
           if (y === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
@@ -173,62 +165,66 @@
       }
 
       const texture = new THREE.CanvasTexture(canvas);
-      // Grazie al tuo UV mapping, ora possiamo usare il ripetitore nativo di Three.js
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(1, 2); // Regola questi numeri se vuoi stringere o allargare le vene
+      texture.repeat.set(1, 3); // Allunga le vene sul lato lungo
       return texture;
     }
 
-    // 7. Funzioni di Finitura (NATIVE)
+    // 7. Funzioni di Modifica Proprietà per le 3 Finiture
     function impostaMarmo(mat) {
       resetMateriale(mat);        
-      mat.color = new THREE.Color(0x111111); // Nero specchiato
-      mat.roughness = 0.02;                  
-      mat.metalness = 0.0;
+      mat.color = new THREE.Color(0x141414); // Nero Marquinia scuro
+      mat.roughness = 0.05;                  // Lucido a specchio
+      mat.metalness = 0.1;
       mat.needsUpdate = true;
     }
 
     function impostaNoce(mat) {
       resetMateriale(mat);        
-      const tex = generaTextureLegno();
-      
-      mat.map = tex;                         // Applica la texture direttamente sulle coordinate UV
-      mat.bumpMap = tex;                     // Crea il micro-rilievo
-      mat.bumpScale = 0.015;                 // Altezza del rilievo sulle vene
-      
-      mat.color = new THREE.Color(0xffffff); // Lasciamo bianco per far vedere i colori del canvas
-      mat.roughness = 0.45;                  // Finitura satinata legno
+      const textureLegno = generaTextureLegno();
+      mat.map = textureLegno;
+      mat.bumpMap = textureLegno;            // Assegna il rilievo tattile alle vene
+      mat.bumpScale = 0.015;
+      mat.color = new THREE.Color(0xffffff); // Bianco neutro per non alterare la texture
+      mat.roughness = 0.55;                  // Finitura satinata/opaca
       mat.metalness = 0.0;
       mat.needsUpdate = true;
     }
 
     function impostaVetro(mat) {
       resetMateriale(mat);        
-      mat.color = new THREE.Color(0x1a2226); 
-      mat.roughness = 0.01;                  
+      mat.color = new THREE.Color(0x2c3539); // Grigio fumo
+      mat.roughness = 0.05;                 // Perfettamente liscio
       mat.metalness = 0.1;
       mat.transparent = true;
-      mat.opacity = 0.25;                    
-      
+      mat.opacity = 0.3;                    // Trasparenza visiva
       if (mat.transmission !== undefined) {
-        mat.transmission = 0.95;             
-        mat.ior = 1.5;                       
+        mat.transmission = 0.95;            // Canale di rifrazione fisica del vetro reale
       }
       mat.needsUpdate = true;
     }
 
-    // 8. Eventi Pulsanti
+    // 8. Eventi Pulsanti Menu
     document.getElementById('btn-marmo').addEventListener('click', () => {
-      if (materialeTop) impostaMarmo(materialeTop);
+      if (materialeTop) {
+        impostaMarmo(materialeTop);
+        console.log('Finitura applicata: Marmo Marquinia');
+      }
     });
 
     document.getElementById('btn-noce').addEventListener('click', () => {
-      if (materialeTop) impostaNoce(materialeTop);
+      if (materialeTop) {
+        impostaNoce(materialeTop);
+        console.log('Finitura applicata: Noce Canaletto con Venature');
+      }
     });
 
     document.getElementById('btn-vetro').addEventListener('click', () => {
-      if (materialeTop) impostaVetro(materialeTop);
+      if (materialeTop) {
+        impostaVetro(materialeTop);
+        console.log('Finitura applicata: Vetro Fumé');
+      }
     });
 
     // 9. Loop di Rendering
@@ -239,7 +235,7 @@
     }
     animate();
 
-    // 10. Risoluzione Schermo
+    // 10. Gestione Finestra Browser
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
