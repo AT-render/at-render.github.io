@@ -139,34 +139,31 @@
 
     // 🪵 GENERATORE PROCEDURALE DEL LEGNO AVANZATO (Fotorealistico)
     function generaTextureLegno() {
-      const size = 1024; // Aumentato a 1024 per maggiore nitidezza e micro-dettagli
+      const size = 1024; // Risoluzione aumentata per micro-dettagli definiti
       const canvas = document.createElement('canvas');
       canvas.width = size;
       canvas.height = size;
       const ctx = canvas.getContext('2d');
 
-      // 1. Colore di fondo del Noce Canaletto (morbido e caldo)
+      // 1. Colore di fondo del Noce Canaletto
       ctx.fillStyle = '#5c4028';
       ctx.fillRect(0, 0, size, size);
 
-      // Finto rumore di fondo (Pori del legno)
+      // Finto rumore di fondo (Pori del legno ad alta densità)
       for (let i = 0; i < 3000; i++) {
         ctx.fillStyle = `rgba(60, 38, 20, ${Math.random() * 0.15})`;
         ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 2, 1 + Math.random() * 4);
       }
 
-      // 2. Stratificazione delle venature principali e secondarie
-      // Usiamo più passaggi con opacità diverse per creare profondità
+      // 2. Stratificazione delle venature (Macro e Micro flussi)
       const passaggi = [
-        { color: 'rgba(43, 26, 12, 0.25)', linee: 180, width: 3 },  // Venature larghe di fondo
-        { color: 'rgba(33, 18, 6, 0.4)', linee: 220, width: 1.5 }, // Venature medie definite
-        { color: 'rgba(75, 52, 34, 0.2)', linee: 100, width: 4 }   // Sfumature chiare di contrasto
+        { color: 'rgba(43, 26, 12, 0.25)', linee: 180, width: 3 },  // Onde morbide di fondo
+        { color: 'rgba(33, 18, 6, 0.4)', linee: 220, width: 1.5 }, // Venature scure definite
+        { color: 'rgba(75, 52, 34, 0.2)', linee: 100, width: 4 }   // Riflessi chiari di contrasto
       ];
 
       passaggi.forEach(passo => {
         ctx.lineWidth = passo.width;
-        
-        // Sfasamento ondulatorio matematico (Pseudo-Noise)
         const randSeed = Math.random() * 100;
 
         for (let i = -size; i < size * 2; i += (size / passo.linee)) {
@@ -174,13 +171,12 @@
           ctx.strokeStyle = passo.color;
           
           for (let y = 0; y <= size; y += 5) {
-            // Unione di onde a frequenze diverse per rompere la geometricità
+            // Unione di onde a frequenze diverse per spezzare la geometricità sinusoidale
             const wave1 = Math.sin(y * 0.008 + randSeed) * 25;
             const wave2 = Math.sin(y * 0.025 + randSeed * 2) * 8;
-            const wave3 = Math.cos(y * 0.002) * 40; // Ondulazione macroscopica
+            const wave3 = Math.cos(y * 0.002) * 40; 
             
-            // Un piccolo disturbo randomico per simulare la fibra grezza
-            const microNoise = (Math.random() - 0.5) * 0.8;
+            const microNoise = (Math.random() - 0.5) * 0.8; // Disturbo della fibra grezza
 
             const x = i + wave1 + wave2 + wave3 + microNoise + (y * 0.15);
             
@@ -191,36 +187,44 @@
         }
       });
 
-      // Creiamo anche una mappa di roughness basata sullo stesso canvas ma convertito
+      // 3. Creazione mappa di Roughness (irregolarità dei riflessi della luce)
       const canvasRough = document.createElement('canvas');
       canvasRough.width = size;
       canvasRough.height = size;
       const ctxRough = canvasRough.getContext('2d');
-      // Disegna una base grigia (riflessione media) e sovrappone il canvas del legno in modalità multiply
-      ctxRough.fillStyle = '#888888';
+      ctxRough.fillStyle = '#888888'; // Riflessione media di base
       ctxRough.fillRect(0, 0, size, size);
       ctxRough.globalAlpha = 0.5;
-      ctxRough.drawImage(canvas, 0, 0);
+      ctxRough.drawImage(canvas, 0, 0); // Unisce la texture del legno per rendere le vene più opache
 
-      // Generazione delle texture di Three.js
+      // 4. Generazione e ottimizzazione delle coordinate UV delle texture
       const textureColor = new THREE.CanvasTexture(canvas);
-      textureColor.wrapS = THREE.RepeatWrapping;
-      textureColor.wrapT = THREE.RepeatWrapping;
-      textureColor.repeat.set(1, 1.5); // Regola la scala per stirarla elegantemente
+      configuraUVTexture(textureColor);
 
       const textureRough = new THREE.CanvasTexture(canvasRough);
-      textureRough.wrapS = THREE.RepeatWrapping;
-      textureRough.wrapT = THREE.RepeatWrapping;
-      textureRough.repeat.set(1, 1.5);
+      configuraUVTexture(textureRough);
 
       return { color: textureColor, rough: textureRough };
+    }
+
+    // 🔄 FUNZIONE CRITICA: Corregge orientamento, scala e cuciture UV di Blender
+    function configuraUVTexture(texture) {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      
+      // Ruota di 90° per orientare le venature lungo la lunghezza del tavolo
+      texture.rotation = Math.PI / 2; 
+      texture.center.set(0.5, 0.5);
+
+      // Allarga ed estende le onde (evita l'effetto "lamiera ondulata" e camuffa la cucitura centrale)
+      texture.repeat.set(0.25, 0.4); 
     }
 
 
     // 7. Funzioni di Modifica Proprietà per le 3 Finiture
     function impostaMarmo(mat) {
       resetMateriale(mat);        
-      mat.color = new THREE.Color(0xfcfcfc); // 
+      mat.color = new THREE.Color(0xfcfcfc); 
       mat.roughness = 0.05;                  // Lucido a specchio
       mat.metalness = 0.1;
       mat.needsUpdate = true;
@@ -232,11 +236,11 @@
       const textures = generaTextureLegno();
       
       mat.map = textures.color;
-      mat.bumpMap = textures.color;            // Il bump basato sul colore funziona bene per scavare le vene scure
-      mat.bumpScale = 0.004;                   // Ridotto: le venature reali sono micro-rilievi, non solchi profondi
+      mat.bumpMap = textures.color;            // Usa il pattern colore come mappa di rilievo
+      mat.bumpScale = 0.003;                   // Molto leggero: evita ombreggiature finte e pesanti
       
-      mat.roughnessMap = textures.rough;       // Mappa per riflessi irregolari realistici
-      mat.roughness = 0.45;                    // Bilanciamento lucido/opaco di base
+      mat.roughnessMap = textures.rough;       // Assegna la mappa dei riflessi realistici
+      mat.roughness = 0.45;                    
       mat.metalness = 0.0;
       
       mat.color = new THREE.Color(0xffffff); 
@@ -245,13 +249,13 @@
 
     function impostaVetro(mat) {
       resetMateriale(mat);        
-      mat.color = new THREE.Color(0x2c3539); // Grigio fumo
-      mat.roughness = 0.05;                 // Perfettamente liscio
+      mat.color = new THREE.Color(0x2c3539);   // Grigio fumo
+      mat.roughness = 0.05;                    // Vetro liscio
       mat.metalness = 0.1;
       mat.transparent = true;
-      mat.opacity = 0.3;                    // Trasparenza visiva
+      mat.opacity = 0.3;                    
       if (mat.transmission !== undefined) {
-        mat.transmission = 0.95;            // Canale di rifrazione fisica del vetro reale
+        mat.transmission = 0.95;               // Attiva la rifrazione fisica reale (PBR)
       }
       mat.needsUpdate = true;
     }
@@ -267,7 +271,7 @@
     document.getElementById('btn-noce').addEventListener('click', () => {
       if (materialeTop) {
         impostaNoce(materialeTop);
-        console.log('Finitura applicata: Noce Canaletto con Venature');
+        console.log('Finitura applicata: Noce Canaletto Realistico');
       }
     });
 
