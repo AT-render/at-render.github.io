@@ -160,7 +160,7 @@
         <p>Una selezione di lavori realizzati per architetti, aziende dell’arredo e studi tecnici. Ogni progetto è sviluppato con attenzione maniacale alla coerenza dei materiali e alla fedeltà delle proporzioni.</p>
 
 
-        <!-- REALTÀ AUMENTATA -->
+        <!-- REALTÀ AUMENTATA E INTERATTIVITÀ 3D -->
         <h3 class="portfolio-category">Realtà Aumentata</h3>
         <div class="portfolio-grid">
 
@@ -168,6 +168,15 @@
                 <model-viewer src="3D_models/Lilly.SCA.glb" auto-rotate camera-controls ar></model-viewer>
                 <p>Modello AR – posizionabile in scala reale</p>
                 <a href="#" class="ar-video-trigger"><strong>--> Prova su MOBILE o clicca e guarda il video <--</strong></a>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="archivio/configuratore_tipo.png" alt="Anteprima Configuratore 3D Interattivo Tavolo Lemans">
+                
+                <p>Configuratore 3D – personalizzazione materiali e colori in tempo reale</p>
+                <a href="interazioni/configuratore_tipo.html" class="btn-secondary small" style="display: inline-block; margin-top: 5px; text-decoration: none;">
+                    Apri il Configuratore →
+                </a>
             </div>
 
         </div>
@@ -193,7 +202,7 @@
             </div>
 
             <div class="portfolio-item" style="background-color: lightgrey;">
-                <iframe src="https://www.youtube.com/embed/LhGRONnY-X0" allowfullscreen></iframe>
+                <iframe style="height: 420px;" src="https://www.youtube.com/embed/LhGRONnY-X0" allowfullscreen></iframe>
                 <p>Walkthrough virtuale</p>
             </div>
 
@@ -388,7 +397,7 @@
             const popup = document.getElementById("arVideoPopup");
             const trigger = document.querySelector(".ar-video-trigger");
             const closeBtn = document.querySelector(".ar-video-close");
-            const video = popup.querySelector("video"); // ← QUESTA È LA PARTE CHE MANCA
+            const video = popup.querySelector("video");
 
             trigger.addEventListener("click", function(e) {
                 e.preventDefault();
