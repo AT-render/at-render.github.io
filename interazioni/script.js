@@ -26,7 +26,7 @@ function init() {
 
 function caricaModello() {
     const loader = new GLTFLoader();
-    loader.load('/interazioni/Lemans.tavolo.glb', (gltf) => {
+    loader.load('Lemans.tavolo.glb', (gltf) => {
         modello = gltf.scene;
 
         modello.traverse((n) => {
