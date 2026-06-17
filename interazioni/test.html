@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Configuratore Tavolo</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #111; }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="ui">
+    <button onclick="cambiaGambe('nero')">Gambe Nero</button>
+    <button onclick="cambiaGambe('metallo')">Gambe Metallo</button>
+    <button onclick="cambiaPiano('chiaro')">Piano Legno Chiaro</button>
+    <button onclick="cambiaPiano('scuro')">Piano Legno Scuro</button>
+</div>
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
