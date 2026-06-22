@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-76QLWCN9VF"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -11,7 +10,6 @@
       gtag('config', 'G-76QLWCN9VF');
     </script>
     
-    <!-- per ottimizzazione SEO -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -39,7 +37,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualizzazione modello 3D | AT‑render</title>
     
-    <!-- Percorsi corretti con ../ perché ci troviamo nella cartella "interazioni" -->
     <link rel="stylesheet" href="../style.css">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     
@@ -76,6 +73,49 @@
         display: block;
         width: 100% !important;
         height: 100% !important;
+      }
+
+      /* ==========================================================================
+         SCHERMATA DI CARICAMENTO (LOADER)
+         ========================================================================== */
+      #loading-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(26, 26, 26, 0.9);
+        z-index: 2000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease;
+      }
+
+      .loader-content {
+        text-align: center;
+        color: white;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #333;
+        border-top: 5px solid #ffffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px auto;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      #loading-text {
+        font-size: 16px;
+        letter-spacing: 1px;
+        margin: 0;
       }
 
       /* Menu di controllo ancorato sopra il fondo del canvas */
@@ -149,7 +189,6 @@
 </head>
 <body>
 
-    <!-- HEADER ESTRATTO DA index.html (con i link corretti per tornare alla root) -->
     <header class="site-header">
         <a href="../#top" class="logo">
             <img src="../img/AT_logo.squared.alpha.TOP.web.png" alt="AT-render Logo">
@@ -170,8 +209,14 @@
         </nav>
     </header>
 
-    <!-- Contenitore per l'area 3D e la relativa UI overlay -->
     <div id="canvas-container">
+        <div id="loading-screen">
+            <div class="loader-content">
+                <div class="spinner"></div>
+                <p id="loading-text">Modello in caricamento... 0%</p>
+            </div>
+        </div>
+
         <div id="menu">
           <button id="btn-marmo">Top Marmo</button>
           <button id="btn-noce">Top Legno</button>
@@ -224,42 +269,67 @@
       let materialeGambe = null;
       const materialiBlender = {};
 
+      // Riferimenti DOM per il caricamento
+      const loadingScreen = document.getElementById('loading-screen');
+      const loadingText = document.getElementById('loading-text');
+
       const loader = new GLTFLoader();
-      // Il file .glb si trova nella stessa cartella della pagina interazioni, o nella root? 
-      // Se si trova nella root usa '../Lemans.tavolo.glb'
-      loader.load('./Lemans.tavolo.glb', (gltf) => {
-        const tavoloModello = gltf.scene;
-        tavoloModello.scale.set(1, 1, 1); 
-        scene.add(tavoloModello);
-        
-        if (gltf.parser && gltf.parser.json && gltf.parser.json.materials) {
-          gltf.parser.json.materials.forEach((matInfo, index) => {
-            if (matInfo.name === 'Top_MAT.001' || matInfo.name === 'Top_MAT.002' || matInfo.name === 'Top_MAT.003') {
-              gltf.parser.getDependency('material', index).then((materialePronto) => {
-                materialiBlender[matInfo.name] = materialePronto;
-              });
+      
+      loader.load('./Lemans.tavolo.glb', 
+        // 1. Funzione Success
+        (gltf) => {
+          const tavoloModello = gltf.scene;
+          tavoloModello.scale.set(1, 1, 1); 
+          scene.add(tavoloModello);
+          
+          if (gltf.parser && gltf.parser.json && gltf.parser.json.materials) {
+            gltf.parser.json.materials.forEach((matInfo, index) => {
+              if (matInfo.name === 'Top_MAT.001' || matInfo.name === 'Top_MAT.002' || matInfo.name === 'Top_MAT.003') {
+                gltf.parser.getDependency('material', index).then((materialePronto) => {
+                  materialiBlender[matInfo.name] = materialePronto;
+                });
+              }
+            });
+          }
+
+          tavoloModello.traverse((child) => {
+            if (child.isMesh && child.material) {
+              if (child.material.name === 'Top_MAT.001' || child.material.name === 'Top_MAT') {
+                meshTop = child;
+                materialiBlender['Top_MAT.001'] = child.material;
+              }
+              
+              if (child.material.name === 'Leg_MAT') {
+                materialeGambe = child.material;
+                const coloreIniziale = '#' + materialeGambe.color.getHexString();
+                document.getElementById('color-gambe').value = coloreIniziale;
+              }
             }
           });
-        }
 
-        tavoloModello.traverse((child) => {
-          if (child.isMesh && child.material) {
-            if (child.material.name === 'Top_MAT.001' || child.material.name === 'Top_MAT') {
-              meshTop = child;
-              materialiBlender['Top_MAT.001'] = child.material;
-            }
-            
-            if (child.material.name === 'Leg_MAT') {
-              materialeGambe = child.material;
-              const coloreIniziale = '#' + materialeGambe.color.getHexString();
-              document.getElementById('color-gambe').value = coloreIniziale;
-            }
+          // Nascondi la schermata con dissolvenza sfumata
+          loadingScreen.style.opacity = '0';
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+          }, 500);
+
+        }, 
+        // 2. Funzione Progress (Aggiorna percentuale)
+        (xhr) => {
+          if (xhr.total > 0) {
+            const percentComplete = Math.round((xhr.loaded / xhr.total) * 100);
+            loadingText.textContent = `Modello in caricamento... ${percentComplete}%`;
+          } else {
+            loadingText.textContent = 'Caricamento modello in corso...';
           }
-        });
-
-      }, undefined, (error) => {
-        console.error('Errore nel caricamento del file .glb:', error);
-      });
+        }, 
+        // 3. Funzione Error
+        (error) => {
+          console.error('Errore nel caricamento del file .glb:', error);
+          loadingText.textContent = 'Errore nel caricamento del modello.';
+          loadingText.style.color = '#ff4444';
+        }
+      );
 
       function applicaMaterialeNativo(nomeMateriale) {
         if (!meshTop) return;
